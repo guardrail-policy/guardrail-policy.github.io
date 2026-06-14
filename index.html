@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="GLIDE: Guardrails for Learning from Infeasible Demonstrations Efficiently">
+  <meta name="keywords" content="Learning from Demonstrations, Dexterous Manipulation, LLM for Robotics">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GLIDE</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/icon.png">
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title"><img src="./static/images/icon_page.png"
+               class="publication-icon"
+               alt="GLIDE icon">GLIDE: Guardrails for Learning from Infeasible Demonstrations Efficiently</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              Anonymous Authors</span>
+          </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <figure class="image">
+        <video class="guardrail-teaser-video" controls playsinline preload="metadata" width="1920" height="1080">
+          <source src="./static/videos/glide.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </figure>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">TL;DR:</span> GLIDE uses closed-loop, self-refined guardrails to make infeasible robot manipulation tasks demonstrable, learnable, and the trained policies more reliable to deploy.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Behavior cloning for robot manipulation relies on expert demonstrations. However, for tasks that require dynamic stability, precise contact timing, or dexterous coordination, human teleoperators may find it <span class="abstract-kw">hard or evenimpossible to collect data</span>. We study this infeasible-demonstration regime and propose GLIDE, a framework that infers <span class="abstract-kw">task-specific failure modes</span> and converts them into <span class="abstract-kw">executable guardrails</span> for data collection and policy deployment. Given a task description, GLIDE writes guardrails that use robot states to filter teleoperation and policy commands, constrain failure-prone actions, and <span class="abstract-kw">iteratively improve from closed-loop dataset feedback</span>. Across <em>Tomato plate transfer</em>, <em>Marker handover &amp; stand</em>, and <em>Wine serving</em> tasks, GLIDE improves data collection over raw VR teleoperation and manually designed guardrails. After refinement, GLIDE raises data-collection efficiency from <span class="abstract-kw">0-10%</span> to <span class="abstract-kw">70-90%</span> across the three tasks. During policy execution, guarded deployment raises <em>Tomato plate transfer</em> policy success from <span class="abstract-kw">0%</span> to <span class="abstract-kw">60-70%</span>, enabling efficient learning on mixed-quality demonstrations. These results show that
+            GLIDE can support policy learning when direct
+            demonstrations are infeasible.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <!-- GLIDE Overview. -->
+        <div class="content">
+          <h2 class="title is-3">GLIDE Overview</h2>
+          <figure class="image">
+            <img src="./static/images/guardrail/teaser.png"
+                 class="guardrail-overview-image"
+                 alt="GLIDE overview showing guarded teleoperation for tomato plate transfer.">
+          </figure>
+          <p class="has-text-justified is-size-6 mt-4">
+            GLIDE converts task descriptions into runtime guardrails that constrain error-prone VR
+            teleoperation, enabling reliable data collection and policy learning for tasks that are difficult to demonstrate directly.
+          </p>
+        </div>
+        <!--/ GLIDE Overview. -->
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <!-- GLIDE Methodology. -->
+        <div class="content">
+          <h2 class="title is-3">GLIDE Methodology</h2>
+          <figure class="image">
+            <img src="./static/images/guardrail/method.png"
+                 class="guardrail-methodology-image"
+                 alt="GLIDE methodology: task description, generated guardrails, user rollouts, self-refinement, and final guarded data collection.">
+          </figure>
+          <p class="has-text-justified is-size-6 mt-4">
+            (A) From task description,
+            GLIDE infers task-specific failure points and generates an initial executable
+            guardrail. (B) During data collection, the guardrail filters human
+         commands while logging system states, human commands, and 
+            executed commands. (C) GLIDE diagnoses real-world
+            dataset using visual feedback to determine successes or failure modes and self-refines the guardrail. (D) This rollout-driven loop
+            repeats across iterations; the final guardrail improves demonstration
+            collection and can also guard learned policies at deployment.
+          </p>
+        </div>
+        <!--/ GLIDE Methodology. -->
+      </div>
+    </div>
+
+    <!-- Task Switcher. -->
+    <div class="task-switcher" data-task-switcher>
+      <nav class="task-switcher-nav" aria-label="Task selection">
+        <button class="task-switcher-button is-active"
+                type="button"
+                data-task-button="tomato"
+                aria-controls="task-panel-tomato"
+                aria-pressed="true">
+          <span class="task-switcher-button-icon" aria-hidden="true">🍅</span>
+          <span>Tomato Plate Transfer</span>
+        </button>
+        <button class="task-switcher-button"
+                type="button"
+                data-task-button="marker"
+                aria-controls="task-panel-marker"
+                aria-pressed="false">
+          <span class="task-switcher-button-icon" aria-hidden="true">🖍️</span>
+          <span>Marker Handover &amp; Stand</span>
+        </button>
+        <button class="task-switcher-button"
+                type="button"
+                data-task-button="wine"
+                aria-controls="task-panel-wine"
+                aria-pressed="false">
+          <span class="task-switcher-button-icon" aria-hidden="true">🍷</span>
+          <span>Wine Serving</span>
+        </button>
+      </nav>
+
+      <div class="task-switcher-panels">
+        <article class="task-panel is-active"
+                 id="task-panel-tomato"
+                 data-task-panel="tomato"
+                 aria-hidden="false">
+          <div class="task-section-block">
+            <h2 class="title is-3">Task Descriptions</h2>
+            <h3 class="title is-4"><span class="task-emoji" aria-hidden="true">🍅</span> Tomato Plate Transfer</h3>
+            <div class="content has-text-justified">
+              <p>
+                The robot must use both
+                grippers to grasp and transport a plate containing tomatoes from tabletop to
+                an elevated surface. Successful execution requires maintaining plate stability
+                throughout the lift and placement so that no tomatoes are spilled.
+              </p>
+            </div>
+            <figure class="image">
+              <img src="./static/images/guardrail/tomato-task-progress-web.png"
+                   alt="Tomato plate transfer task description.">
+            </figure>
+            <p class="task-description-note">
+              <i>Note: visual outlines in the images are added only for readability; the underlying robot observations are otherwise unedited.</i>
+            </p>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE Guardrail Generation</h2>
+            <div class="guardrail-codegen" data-codegen>
+              <div class="codegen-pane codegen-prompt-pane">
+                <div class="codegen-pane-header">
+                  <span>Task Prompt</span>
+                </div>
+                <p class="codegen-prompt" data-codegen-prompt>I have a bimanual teleoperation script at &lt;script_name&gt;, where the readings of two controllers from VR headset are mapped to the robot commands through inverse kinematics. I am now collecting data for a new task, that bimanually picking up and lifting a plate full of cherry tomatoes onto a box. Please identify the potential failure cases in the teleoperation process, design constraints and apply the filter that will help to make the human teleoperation easier.</p>
+              </div>
+              <div class="codegen-pane codegen-code-pane">
+                <div class="codegen-pane-header">
+                  <span>GLIDE Guardrail Code</span>
+                  <span class="codegen-status">generating</span>
+                </div>
+                <pre class="codegen-code"><code data-codegen-code>
+                  class PlateLiftTeleopFilter:
+                      # Task-space filter inserted between raw VR target poses and IK.
+
+                      def _filter_carry_midpoint(self, raw_mid, prev_mid):
+                          # Move the shared plate center. XY can move faster for
+                          # transport, while Z is slower to avoid drops and spills.
+                          filtered = prev_mid + pos_alpha * (raw_mid - prev_mid)
+                          step = filtered - prev_mid
+                          step[:2] = clamp_vector_norm(step[:2], carry_max_xy_speed * dt)
+                          step[2] = clip(step[2], -carry_max_z_speed * dt, carry_max_z_speed * dt)
+                          step_delta = clamp_accel(step - self.prev_mid_step)
+                          self.prev_mid_step = step
+                          return prev_mid + step
+
+                      def filter_pair(self, left_target_pose, right_target_pose, stabilize=False):
+                          if not stabilize:
+                              return filter_single(left), filter_single(right)
+                          self._ensure_carry_reference(left_target_pose, right_target_pose)
+                          raw_mid = 0.5 * (raw_left_pos + raw_right_pos)
+                          raw_mid[2] = max(raw_mid[2], init_mid[2] - carry_down_margin)
+                          half_delta = carry_differential_gain * (raw_half_sep - init_half_sep)
+                          half_delta[2] = clip(
+                              half_delta[2], -0.5 * carry_max_height_diff, 0.5 * carry_max_height_diff)
+                          filtered_mid = self._filter_carry_midpoint(raw_mid, prev_mid)
+                          left_rot = self._filter_rotation(carry_left_rot, left_target_rot, carry_orientation_weight)
+                          right_rot = self._filter_rotation(carry_right_rot, right_target_rot, carry_orientation_weight)
+                          return left_filtered, right_filtered
+
+
+                  def should_stabilize_plate(left_arm, right_arm, left_state, right_state, args):
+                      # Enter paired carry when both triggers are pressed or both grippers close.
+                      return both_triggers or (left_closed and right_closed)
+
+
+                  def toggle_plate_grippers_from_triggers(left_arm, right_arm, args):
+                      target_label = "open" if min(left_closed, right_closed) &gt;= reopen_threshold else "close"
+                      set_gripper_target_label(left_arm, target_label)
+                      set_gripper_target_label(right_arm, target_label)
+                </code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">Iterative Self-Refinement</h2>
+            <div class="revision-slider" data-revision-slider>
+              <div class="revision-tabs" aria-label="Iterative self-refinement iterations">
+                <button class="revision-tab is-active" type="button" data-revision-target="0" aria-pressed="true">Iteration 1</button>
+                <button class="revision-tab" type="button" data-revision-target="1" aria-pressed="false">Iteration 2</button>
+              </div>
+              <div class="revision-slider-body">
+                <div class="revision-sequence">
+                  <div class="revision-iteration">
+                    <div class="revision-title-row">
+                      <h3 class="title is-5"><code>iteration1</code>: make loaded carry gentler after spill episodes</h3>
+                      <span>Log diagnosis: episodes 6-9 spilled after the plate was already grasped; failed runs had faster loaded transport and larger height mismatch.</span>
+                    </div>
+                    <div class="revision-diff" aria-label="Tomato iteration 1 split code diff">
+                      <div class="revision-diff-head">
+                        <span>Before</span>
+                        <span>After</span>
+                      </div>
+                      <div class="revision-diff-body">
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Motion limits during carry (plate guardrail restrictions) - Changing speed limits; adding acceleration guard</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Motion limits during carry (plate guardrail restrictions) - Changing speed limits; adding acceleration guard</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1222</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.45">parser.add_argument("--plate-filter-alpha", type=float, default=0.45)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1222</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.40">parser.add_argument("--plate-filter-alpha", type=float, default=0.40)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1224</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.18">parser.add_argument("--plate-carry-max-ee-speed", type=float, default=0.18)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1224</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.14">parser.add_argument("--plate-carry-max-ee-speed", type=float, default=0.14)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1225</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="plate-carry-max-ee-accel|0.45">parser.add_argument("--plate-carry-max-ee-accel", type=float, default=0.45)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-context"><span class="revision-line-no">1350</span><span class="revision-sign"></span><code class="revision-diff-code">left_pos = self._filter_position(</code></div>
+                          <div class="revision-cell is-context"><span class="revision-line-no">1350</span><span class="revision-sign"></span><code class="revision-diff-code">left_pos = self._filter_position(</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-context"><span class="revision-line-no">1351</span><span class="revision-sign"></span><code class="revision-diff-code">    left_pos, left_prev,</code></div>
+                          <div class="revision-cell is-context"><span class="revision-line-no">1351</span><span class="revision-sign"></span><code class="revision-diff-code">    left_pos, left_prev,</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1352</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="self.config.carry_max_speed">    self.config.carry_max_speed,</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1352</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="self.prev_left_step">    self.prev_left_step,</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1353</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="self.config.carry_max_accel">    self.config.carry_max_accel,</code></div>
+                        </div>
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Keep the plate level (plate guardrail restrictions) - Tightening shared stability bound</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Keep the plate level (plate guardrail restrictions) - Tightening shared stability bound</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1231</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.012">parser.add_argument("--plate-carry-max-height-diff", type=float, default=0.012)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1232</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.008">parser.add_argument("--plate-carry-max-height-diff", type=float, default=0.008)</code></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="revision-iteration">
+                    <div class="revision-title-row">
+                      <h3 class="title is-5"><code>iteration2</code>: make transport faster without relaxing vertical safety</h3>
+                      <span>Log diagnosis: episode 7 fully closed but spilled during carry; one isotropic filter throttled horizontal and vertical motion together.</span>
+                    </div>
+                    <div class="revision-diff" aria-label="Tomato iteration 2 split code diff">
+                      <div class="revision-diff-head">
+                        <span>Before</span>
+                        <span>After</span>
+                      </div>
+                      <div class="revision-diff-body">
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Motion limits during carry (plate guardrail restrictions) - Move the plate as one object</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Motion limits during carry (plate guardrail restrictions) - Move the plate as one object</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1224</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.14">parser.add_argument("--plate-carry-max-ee-speed", type=float, default=0.14)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1224</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.22">parser.add_argument("--plate-carry-max-ee-speed", type=float, default=0.22)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1225</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="plate-carry-max-xy-speed|0.24">parser.add_argument("--plate-carry-max-xy-speed", type=float, default=0.24)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1226</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="plate-carry-max-z-speed|0.055">parser.add_argument("--plate-carry-max-z-speed", type=float, default=0.055)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1227</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="plate-carry-max-xy-accel|0.85">parser.add_argument("--plate-carry-max-xy-accel", type=float, default=0.85)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1228</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="plate-carry-max-z-accel|0.18">parser.add_argument("--plate-carry-max-z-accel", type=float, default=0.18)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1361</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del">left_pos = self._filter_position(</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1361</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add">prev_mid = 0.5 * (left_prev + right_prev)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1364</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del">    self.config.carry_max_speed,</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1362</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add">filtered_mid = self._filter_carry_midpoint(raw_mid, prev_mid)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1365</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del">    self.prev_left_step,</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1363</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add">left_pos = filtered_mid + filtered_half_sep</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1366</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del">    self.config.carry_max_accel,</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1364</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add">right_pos = filtered_mid - filtered_half_sep</code></div>
+                        </div>
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Restrain wrist/plate tilt (plate guardrail restrictions) - Relaxing an over-strict orientation lock</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Restrain wrist/plate tilt (plate guardrail restrictions) - Relaxing an over-strict orientation lock</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1235</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="1.0">parser.add_argument("--plate-carry-orientation-weight", type=float, default=1.0)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1239</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.9">parser.add_argument("--plate-carry-orientation-weight", type=float, default=0.9)</code></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="task-section-block">
+            <h2 class="title is-3">GLIDE Analysis (<span class="task-emoji" aria-hidden="true">🍅</span> Tomato Plate Transfer)</h2>
+            <figure class="image">
+              <img src="./static/images/guardrail/qualitative.png"
+                   class="guardrail-qualitative-image"
+                   alt="Qualitative analysis showing GLIDE limiting relative end-effector height mismatch during tomato plate transfer.">
+            </figure>
+            <p class="has-text-justified is-size-6 mt-4">
+              A key failure mode in unguarded teleoperation: discrepancies between the two VR controllers can induce an inter-arm height mismatch that tilts the plate during transport. GLIDE activates during the carry phase and constrains the end-effector height difference, preserving plate stability as the robot lifts and transfers the plate to the elevated surface.
+            </p>
+          </div> -->
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-Teleoperation</h2>
+            <div class="data-comparison-table">
+              <div class="data-comparison-task">
+                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🍅</span> Tomato Plate Transfer</h3>
+                <div class="data-comparison-tabs" aria-label="Tomato Plate Transfer teleoperation method slides">
+                  <button class="data-comparison-tab is-open is-active" type="button" data-slide-target="0" aria-pressed="true">
+                    <span class="data-comparison-status" aria-hidden="true">✕</span>
+                    <span class="data-comparison-tab-copy"><span>OpenTV</span></span>
+                  </button>
+                  <button class="data-comparison-tab is-glide" type="button" data-slide-target="1" aria-pressed="false">
+                    <span class="data-comparison-status" aria-hidden="true">✓</span>
+                    <span class="data-comparison-tab-copy"><span>GLIDE</span></span>
+                  </button>
+                  <button class="data-comparison-tab is-manual" type="button" data-slide-target="2" aria-pressed="false">
+                    <span class="data-comparison-status" aria-hidden="true">◐</span>
+                    <span class="data-comparison-tab-copy"><span>Manual</span></span>
+                  </button>
+                </div>
+                <div class="data-comparison-slider">
+                  <button class="data-comparison-arrow is-prev" type="button" data-slide-prev aria-label="Previous teleoperation method"></button>
+                  <div class="carousel results-carousel data-comparison-carousel">
+                    <div class="item data-comparison-cell" data-slide-name="OpenTV">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
+                        <source src="./static/videos/vanilla_teleop_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        Raw teleoperation treats the two arms independently. During loaded transport, <span class="data-comparison-highlight is-open">controller mismatch can create height differences</span> between grippers, tilt the plate, and spill tomatoes.
+                      </p>
+                    </div>
+                    <div class="item data-comparison-cell" data-slide-name="GLIDE">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
+                        <source src="./static/videos/glide_teleop_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        GLIDE treats both grippers as a coupled tray: it <span class="data-comparison-highlight is-glide">limits carry speed, blocks drops and compression, keeps both rims level</span>, and coordinates gripper open/close.
+                      </p>
+                    </div>
+                    <div class="item data-comparison-cell" data-slide-name="Manual">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
+                        <source src="./static/videos/manual_teleop_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        The manual filter <span class="data-comparison-highlight is-manual">keeps the plate nearly level</span>, preserves grasp width, and limits wrist rotation. These coarse constraints help, but still leave fragile carry timing.
+                      </p>
+                    </div>
+                  </div>
+                  <button class="data-comparison-arrow is-next" type="button" data-slide-next aria-label="Next teleoperation method"></button>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
+            <div class="policy-rollout-grid is-single-task">
+              <div class="policy-rollout-card">
+                <h3 class="policy-rollout-title title is-5"><span class="task-emoji" aria-hidden="true">🍅</span> Tomato Plate Transfer</h3>
+                <video class="policy-rollout-video" controls muted playsinline preload="metadata" width="1280" height="720">
+                  <source src="./static/videos/tomato_plate_lift.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-panel"
+                 id="task-panel-marker"
+                 data-task-panel="marker"
+                 aria-hidden="true"
+                 hidden>
+          <div class="task-section-block">
+            <h2 class="title is-3">Task Descriptions</h2>
+            <h3 class="title is-4"><span class="task-emoji" aria-hidden="true">🖍️</span> Marker Handover &amp; Stand</h3>
+            <div class="content has-text-justified">
+              <p>
+                The robot must grasp a marker with one gripper, transfer it to the opposing gripper, place it upright on the tabletop, and withdraw without knocking it over. Successful execution requires precise bimanual coordination and precise upright placement.
+              </p>
+            </div>
+            <figure class="image">
+              <img src="./static/images/guardrail/marker-task-progress-web.png"
+                   alt="Marker handover and stand task description.">
+            </figure>
+            <p class="task-description-note">
+              <i>Note: visual outlines in the images are added only for readability; the underlying robot observations are otherwise unedited.</i>
+            </p>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE Guardrail Generation</h2>
+            <div class="guardrail-codegen" data-codegen>
+              <div class="codegen-pane codegen-prompt-pane">
+                <div class="codegen-pane-header">
+                  <span>Task Prompt</span>
+                </div>
+                <p class="codegen-prompt" data-codegen-prompt>I have a bimanual teleoperation script at &lt;script_name&gt;, where the readings of two controllers from VR headset are mapped to the robot commands through inverse kinematics. I am now collecting data for a new task, that using one gripper to pick up the upright marker on the table, handing it over to the other gripper, and place it vertically on the table. Please identify the potential failure cases in the teleoperation process, design constraints and apply the filter that will help to make the human teleoperation easier. Please add a flag to enable this filter.</p>
+              </div>
+              <div class="codegen-pane codegen-code-pane">
+                <div class="codegen-pane-header">
+                  <span>GLIDE Guardrail Code</span>
+                  <span class="codegen-status">generating</span>
+                </div>
+                <pre class="codegen-code"><code data-codegen-code>
+                  class PenHandoverTeleopFilter:
+                      # Task-space guardrail for pickup, handoff, carry, and vertical release.
+
+                      def _apply_table_guard(self, pos):
+                          guarded = pos.copy()
+                          guarded[2] = max(guarded[2], table_z + table_clearance)
+                          return guarded
+
+                      def _filter_position(self, raw_pos, prev_pos, prev_step):
+                          raw_pos = self._apply_table_guard(raw_pos)
+                          filtered = prev_pos + pos_alpha * (raw_pos - prev_pos)
+                          step = self._limit_step(filtered - prev_pos, prev_step)
+                          return self._apply_table_guard(prev_pos + step), step
+
+                      def _apply_release_filter(self, side, target_pose, close_fraction):
+                          # Anchor pose when fingers begin opening after a firm grasp.
+                          opening = prev_close &gt;= release_start_close_fraction and close_fraction &lt; prev_close - 0.02
+                          if opening and not state["active"]:
+                              state["active"] = True
+                              state["ref_pos"] = target_pose[:3, 3].copy()
+                              state["ref_rot"] = target_pose[:3, :3].copy()
+                          if not lift_allowed:
+                              filtered_pos = ref_pos.copy()
+                          else:
+                              desired_xy = ref_pos[:2] + clamp_vector_norm(
+                                  target_pose[:2, 3] - ref_pos[:2], release_xy_radius)
+                              filtered_pos[:2] = prev_pos[:2] + clamp_vector_norm(
+                                  desired_xy - prev_pos[:2], release_max_xy_speed * dt)
+                          filtered[:3, 3] = filtered_pos
+                          filtered[:3, :3] = blend_rotation(target_rot, ref_rot, release_orientation_weight)
+                          return filtered
+
+                      def _shape_handoff_targets(self, left_pos, right_pos):
+                          raw_mid = 0.5 * (left_pos + right_pos)
+                          half_sep = prev_half_sep + handoff_relative_gain * (raw_half_sep - prev_half_sep)
+                          half_z = clip(
+                              0.5 * (left_pos[2] - right_pos[2]),
+                              -0.5 * handoff_max_height_diff,
+                              0.5 * handoff_max_height_diff)
+                          return raw_mid + half_sep, raw_mid - half_sep
+
+                      def filter_pair(self, left_target_pose, right_target_pose, handoff=False):
+                          if handoff:
+                              left_raw, right_raw = self._shape_handoff_targets(left_raw, right_raw)
+                          left_pos, right_pos = enforce_min_xy_distance(left_pos, right_pos)
+                          left_filtered = self._apply_release_filter("left", left_filtered, left_close_fraction)
+                          right_filtered = self._apply_release_filter("right", right_filtered, right_close_fraction)
+                          return left_filtered, right_filtered
+
+
+                  def should_stabilize_pen_handoff(...):
+                      near_handoff = xy_distance &lt;= handoff_xy_window and z_distance &lt;= handoff_z_window
+                      return near_handoff and (both_triggers or left_holding or right_holding)
+                </code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">Iterative Self-Refinement</h2>
+            <div class="revision-slider" data-revision-slider>
+              <div class="revision-tabs" aria-label="Iterative self-refinement iterations">
+                <button class="revision-tab is-active" type="button" data-revision-target="0" aria-pressed="true">Iteration 1</button>
+                <button class="revision-tab" type="button" data-revision-target="1" aria-pressed="false">Iteration 2</button>
+              </div>
+              <div class="revision-slider-body">
+                <div class="revision-sequence">
+                  <div class="revision-iteration">
+                    <div class="revision-title-row">
+                      <h3 class="title is-5"><code>iteration1</code>: remove lag, then guard the release</h3>
+                      <span>Log diagnosis: raw controller motion was faster than commanded EE motion; failures got the marker upright briefly, then tipped or fell during final opening and retract.</span>
+                    </div>
+                    <div class="revision-diff" aria-label="Marker iteration 1 split code diff">
+                      <div class="revision-diff-head">
+                        <span>Before</span>
+                        <span>After</span>
+                      </div>
+                      <div class="revision-diff-body">
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Motion rate limits (marker guardrail restrictions) - Changing speed damping parameter to remove lag</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Motion rate limits (marker guardrail restrictions) - Changing speed damping parameter to remove lag</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1256</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.35">parser.add_argument("--pen-filter-alpha", type=float, default=0.35)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1256</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.70">parser.add_argument("--pen-filter-alpha", type=float, default=0.70)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1258</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.22">parser.add_argument("--pen-max-ee-speed", type=float, default=0.22)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1258</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.42">parser.add_argument("--pen-max-ee-speed", type=float, default=0.42)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1259</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.24">parser.add_argument("--pen-max-xy-speed", type=float, default=0.24)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1259</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.45">parser.add_argument("--pen-max-xy-speed", type=float, default=0.45)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1260</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.08">parser.add_argument("--pen-max-z-speed", type=float, default=0.08)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1260</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.20">parser.add_argument("--pen-max-z-speed", type=float, default=0.20)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1261</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.70">parser.add_argument("--pen-max-ee-accel", type=float, default=0.70)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1261</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="2.50">parser.add_argument("--pen-max-ee-accel", type=float, default=2.50)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1286</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.80">parser.add_argument("--pen-gripper-max-speed", type=float, default=0.80)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1286</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="2.00">parser.add_argument("--pen-gripper-max-speed", type=float, default=2.00)</code></div>
+                        </div>
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Upright orientation bias and transfer stabilization (marker guardrail restrictions) - Relaxing over-damped guidance</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Upright orientation bias and transfer stabilization (marker guardrail restrictions) - Relaxing over-damped guidance</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1264</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.85">parser.add_argument("--pen-orientation-weight", type=float, default=0.85)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1264</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.15">parser.add_argument("--pen-orientation-weight", type=float, default=0.15)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1265</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.95">parser.add_argument("--pen-handoff-orientation-weight", type=float, default=0.95)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1265</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.35">parser.add_argument("--pen-handoff-orientation-weight", type=float, default=0.35)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1278</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.030">parser.add_argument("--pen-min-ee-xy-distance", type=float, default=0.030)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1278</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.050">parser.add_argument("--pen-min-ee-xy-distance", type=float, default=0.050)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1279</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="pen-handoff-min-ee-xy-distance|0.035">parser.add_argument("--pen-handoff-min-ee-xy-distance", type=float, default=0.035)</code></div>
+                        </div>
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Release and gripper-rate guardrails (marker guardrail restrictions) - Adding new release guard</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Release and gripper-rate guardrails (marker guardrail restrictions) - Adding new release guard</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1286</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="2.00">parser.add_argument("--pen-gripper-max-speed", type=float, default=2.00)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1286</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="1.20">parser.add_argument("--pen-gripper-max-speed", type=float, default=1.20)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-context"><span class="revision-line-no">1418</span><span class="revision-sign"></span><code class="revision-diff-code">filtered = target_pose.copy()</code></div>
+                          <div class="revision-cell is-context"><span class="revision-line-no">1418</span><span class="revision-sign"></span><code class="revision-diff-code">filtered = target_pose.copy()</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1420</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="release_state|_new_release_state">self.release_state = {"left": self._new_release_state(), "right": self._new_release_state()}</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1434</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="_apply_release_filter">def _apply_release_filter(self, side, target_pose, close_fraction):</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1474</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="desired_xy|release_xy_radius">desired_xy = ref_pos[:2] + clamp_vector_norm(target_pose[:2, 3] - ref_pos[:2], self.config.release_xy_radius)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1484</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="desired_z|max">desired_z = max(float(target_pose[2, 3]), float(ref_pos[2]))</code></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="revision-iteration">
+                    <div class="revision-title-row">
+                      <h3 class="title is-5"><code>iteration2</code>: delay and soften the final finger opening</h3>
+                      <span>Log diagnosis: failures were no longer mainly lag, but topples during or immediately after final release.</span>
+                    </div>
+                    <div class="revision-diff" aria-label="Marker iteration 2 split code diff">
+                      <div class="revision-diff-head">
+                        <span>Before</span>
+                        <span>After</span>
+                      </div>
+                      <div class="revision-diff-body">
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Release and gripper-rate guardrails (marker guardrail restrictions) - Changing release functional form</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Release and gripper-rate guardrails (marker guardrail restrictions) - Changing release functional form</span></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1291</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="pen-carry-orientation-weight|0.45">parser.add_argument("--pen-carry-orientation-weight", type=float, default=0.45)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1306</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="pen-release-lift-start-close-fraction|0.50">parser.add_argument("--pen-release-lift-start-close-fraction", type=float, default=0.50)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1307</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="pen-release-lift-height|0.015">parser.add_argument("--pen-release-lift-height", type=float, default=0.015)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1460</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="open_frames">"open_frames": 0,</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1496</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del">if elapsed &lt; self.config.release_hold_s or close_fraction &gt; end_close:</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1497</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add">lift_allowed = elapsed &gt;= self.config.release_hold_s and close_fraction &lt;= lift_start</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1520</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="release_z|release_lift_height">release_z = float(ref_pos[2]) + self.config.release_lift_height * lift_progress</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-del"><span class="revision-line-no">1530</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del">if elapsed &gt;= self.config.release_retreat_s and close_fraction &lt;= end_close:</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1530</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add">if state["open_frames"] * self.dt &gt;= self.config.release_retreat_s:</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1321</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="pen-gripper-max-open-speed|0.90">parser.add_argument("--pen-gripper-max-open-speed", type=float, default=0.90)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1332</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="pen-gripper-release-delay-s|0.15">parser.add_argument("--pen-gripper-release-delay-s", type=float, default=0.15)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">1333</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="pen-gripper-release-delay-close-fraction|0.65">parser.add_argument("--pen-gripper-release-delay-close-fraction", type=float, default=0.65)</code></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="task-section-block">
+            <h2 class="title is-3">GLIDE Analysis (<span class="task-emoji" aria-hidden="true">🖍️</span> Marker Handover &amp; Stand)</h2>
+            <figure class="image">
+              <img src="./static/images/guardrail/qualitative_new.png"
+                   class="guardrail-qualitative-image"
+                   alt="Placeholder qualitative analysis copied from tomato plate transfer.">
+            </figure>
+            <p class="has-text-justified is-size-6 mt-4">
+              A key failure mode in unguarded teleoperation: discrepancies between the two VR controllers can induce an inter-arm height mismatch that tilts the plate during transport. GLIDE activates during the carry phase and constrains the end-effector height difference, preserving plate stability as the robot lifts and transfers the plate to the elevated surface.
+            </p>
+          </div> -->
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-Teleoperation</h2>
+            <div class="data-comparison-table">
+              <div class="data-comparison-task">
+                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🖍️</span> Marker Handover &amp; Stand</h3>
+                <div class="data-comparison-tabs" aria-label="Marker Handover and Stand teleoperation method slides">
+                  <button class="data-comparison-tab is-open is-active" type="button" data-slide-target="0" aria-pressed="true">
+                    <span class="data-comparison-status" aria-hidden="true">✕</span>
+                    <span class="data-comparison-tab-copy"><span>OpenTV</span></span>
+                  </button>
+                  <button class="data-comparison-tab is-glide" type="button" data-slide-target="1" aria-pressed="false">
+                    <span class="data-comparison-status" aria-hidden="true">✓</span>
+                    <span class="data-comparison-tab-copy"><span>GLIDE</span></span>
+                  </button>
+                  <button class="data-comparison-tab is-manual" type="button" data-slide-target="2" aria-pressed="false">
+                    <span class="data-comparison-status" aria-hidden="true">◐</span>
+                    <span class="data-comparison-tab-copy"><span>Manual</span></span>
+                  </button>
+                </div>
+                <div class="data-comparison-slider">
+                  <button class="data-comparison-arrow is-prev" type="button" data-slide-prev aria-label="Previous teleoperation method"></button>
+                  <div class="carousel results-carousel data-comparison-carousel">
+                    <div class="item data-comparison-cell" data-slide-name="OpenTV">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                        <source src="./static/videos/vanilla_pen_marker_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        Raw teleoperation follows controller poses and trigger commands directly. The marker can become upright briefly, then <span class="data-comparison-highlight is-open">topple during release or fast retreat</span>.
+                      </p>
+                    </div>
+                    <div class="item data-comparison-cell" data-slide-name="GLIDE">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                        <source src="./static/videos/glide_pen_marker_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        GLIDE adds rate limits, table and spacing guards, handoff detection, relative-motion damping, height alignment, and <span class="data-comparison-highlight is-glide">a release guard with a held pose, upward retreat, and slower opening</span>.
+                      </p>
+                    </div>
+                    <div class="item data-comparison-cell" data-slide-name="Manual">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                        <source src="./static/videos/manual_pen_marker_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        The manual marker guardrail mainly <span class="data-comparison-highlight is-manual">blocks roll and pitch</span> while leaving yaw and translation active, but does not explicitly manage handoff spacing or final release.
+                      </p>
+                    </div>
+                  </div>
+                  <button class="data-comparison-arrow is-next" type="button" data-slide-next aria-label="Next teleoperation method"></button>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
+            <div class="policy-rollout-grid is-single-task">
+              <div class="policy-rollout-card">
+                <h3 class="policy-rollout-title title is-5"><span class="task-emoji" aria-hidden="true">🖍️</span> Marker Handover &amp; Stand</h3>
+                <video class="policy-rollout-video" controls muted playsinline preload="metadata" width="1280" height="720">
+                  <source src="./static/videos/marker_handover_stand.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-panel"
+                 id="task-panel-wine"
+                 data-task-panel="wine"
+                 aria-hidden="true"
+                 hidden>
+          <div class="task-section-block">
+            <h2 class="title is-3">Task Descriptions</h2>
+            <h3 class="title is-4"><span class="task-emoji" aria-hidden="true">🍷</span> Wine Serving</h3>
+            <div class="content has-text-justified">
+              <p>
+                The robot must use the left gripper to
+                grasp the wine bottle and the right CRAFT hand to grasp the wine cup, then
+                coordinate the two end effectors to pour wine from the bottle into the cup.
+                Successful execution requires retaining stable grasps on both objects while
+                controlling their poses during pouring.
+              </p>
+            </div>
+            <figure class="image">
+              <img src="./static/images/guardrail/pour-task-progress-web.png"
+                   alt="Wine serving task description.">
+            </figure>
+            <p class="task-description-note">
+              <i>Note: visual outlines in the images are added only for readability; the underlying robot observations are otherwise unedited.</i>
+            </p>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE Guardrail Generation</h2>
+            <div class="guardrail-codegen" data-codegen>
+              <div class="codegen-pane codegen-prompt-pane">
+                <div class="codegen-pane-header">
+                  <span>Task Prompt</span>
+                </div>
+                <p class="codegen-prompt" data-codegen-prompt>I have a bimanual teleoperation script at &lt;script_name&gt;, where the readings of two controllers from VR headset are mapped to the robot commands through inverse kinematics and retargeting. The left arm is equipped with a gripper, and the right arm is equipped with a dexterous end effector. I am now collecting data for a new task, that use left gripper to pick up the wine bottle, and right end effector to pick up the wine cup, and after aligning, we pour wine from bottle to the cup, ideally during pouring, the liquid should not spill and finally put both bottle and cup on the table. Please identify the potential failure cases in the teleoperation process, design constraints and apply the filter that will help to make the human teleoperation easier. Write a new script for this.</p>
+              </div>
+              <div class="codegen-pane codegen-code-pane">
+                <div class="codegen-pane-header">
+                  <span>GLIDE Guardrail Code</span>
+                  <span class="codegen-status">generating</span>
+                </div>
+                <pre class="codegen-code"><code data-codegen-code>
+                  def _pose_axis_closest_to_up(pose):
+                      # Auto-calibrate which local tool axis is upright at reset.
+                      return max([x, -x, y, -y, z, -z], key=lambda axis: dot(pose[:3, :3] @ axis, WORLD_UP))
+
+
+                  class WinePourGuardrail:
+                      # Post-process raw arm poses before the base teleop loop commands IK.
+
+                      def reset(self, left_pose, right_pose):
+                          self.previous.clear()
+                          if bottle_upright_axis is None:
+                              self._learned_axes["left"] = _pose_axis_closest_to_up(left_pose)
+                          if cup_upright_axis is None:
+                              self._learned_axes["right"] = _pose_axis_closest_to_up(right_pose)
+
+                      def filter_output(self, output, dt):
+                          left, right = copy(output.left_pose), copy(output.right_pose)
+                          left = self._boost_bottle_pour_tilt(left, reasons)
+                          pour_requested = self._pour_requested(left)
+                          pour_aligned = self._pour_geometry_ok(left, right)
+                          cup_max_tilt = cup_carry_max_tilt
+                          if lock_cup_during_pour and pour_requested and pour_aligned:
+                              cup_max_tilt = cup_upright_max_tilt
+                          right = _cap_tilt(right, self._upright_axis("right"), cup_max_tilt)
+                          left = _cap_tilt(left, self._upright_axis("left"), self._allowed_bottle_tilt(left, right, reasons))
+                          left = self._assist_alignment(left, right, reasons)
+                          left, right = self._separate_arms(left, right, reasons)
+                          output.left_pose = self._rate_limit("left", left, dt, reasons)
+                          output.right_pose = self._rate_limit("right", right, dt, reasons)
+                          return output
+
+                      def _boost_bottle_pour_tilt(self, left_pose, reasons):
+                          # Amplify bottle tilt once the operator starts pouring.
+                          if tilt &lt;= bottle_pour_tilt_boost_start:
+                              return left_pose
+                          boosted_tilt = start + (tilt - start) * bottle_pour_tilt_boost_gain
+                          return self._set_tilt(left_pose, bottle_axis, min(boosted_tilt, bottle_pour_max_tilt))
+
+                      def _assist_alignment(self, left_pose, right_pose, reasons):
+                          # Pull the bottle mouth toward a point above the cup rim.
+                          bottle_point = _tool_point(left_pose, bottle_mouth_offset)
+                          cup_point = _tool_point(right_pose, cup_rim_offset)
+                          desired_bottle_point = cup_point + [0.0, 0.0, align_assist_target_height]
+                          correction = clamp_norm(desired_bottle_point - bottle_point, align_assist_max_correction)
+                          left_pose[:3, 3] += align_assist_strength * correction
+                          return left_pose
+
+
+                  def guard_craft_targets(targets, config):
+                      # Cap side-splay, thumb bend, and finger bend for a gentle cup grasp.
+                      for motor_id, raw in targets.items():
+                          guarded[motor_id] = limit_motor_fraction(motor_id, raw, config)
+                      return guarded
+                </code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">Iterative Self-Refinement</h2>
+            <div class="revision-slider" data-revision-slider>
+              <div class="revision-tabs" aria-label="Iterative self-refinement iterations">
+                <button class="revision-tab is-active" type="button" data-revision-target="0" aria-pressed="true">Iteration 1</button>
+                <button class="revision-tab" type="button" data-revision-target="1" aria-pressed="false">Iteration 2</button>
+              </div>
+              <div class="revision-slider-body">
+                <div class="revision-sequence">
+                  <div class="revision-iteration">
+                    <div class="revision-title-row">
+                      <h3 class="title is-5"><code>iteration1</code>: learn the tool frame and remove setup caps</h3>
+                      <span>Log diagnosis: FK showed local y was closest to world up; the cup and bottle tilt caps were blocking necessary wrist rotation before pouring.</span>
+                    </div>
+                    <div class="revision-diff" aria-label="Wine iteration 1 split code diff">
+                      <div class="revision-diff-head">
+                        <span>Before</span>
+                        <span>After</span>
+                      </div>
+                      <div class="revision-diff-body">
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Cup and bottle tilt gates (wine guardrail restrictions) - Learn the true tool frame</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Cup and bottle tilt gates (wine guardrail restrictions) - Learn the true tool frame</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">60</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="np.ndarray">def _axis_vector(axis: str) -&gt; np.ndarray:</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">60</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="None">def _axis_vector(axis: str) -&gt; np.ndarray | None:</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">62</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="auto|None">if axis == "auto": return None</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">80</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="_pose_axis_closest_to_up">def _pose_axis_closest_to_up(pose: np.ndarray) -&gt; np.ndarray:</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">232</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="field|_axis_vector">cup_upright_axis: np.ndarray = field(default_factory=lambda: _axis_vector("z"))</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">232</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="None">cup_upright_axis: np.ndarray | None = None</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">233</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="field|_axis_vector">bottle_upright_axis: np.ndarray = field(default_factory=lambda: _axis_vector("z"))</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">233</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="None">bottle_upright_axis: np.ndarray | None = None</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">234</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="28.0">bottle_carry_max_tilt_rad: float = math.radians(28.0)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">234</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="90.0">bottle_carry_max_tilt_rad: float = math.radians(90.0)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">235</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="12.0">cup_upright_max_rad: float = math.radians(12.0)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">235</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="18.0">cup_upright_max_rad: float = math.radians(18.0)</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">235</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="112.0">bottle_pour_max_tilt_rad: float = math.radians(112.0)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">235</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="125.0">bottle_pour_max_tilt_rad: float = math.radians(125.0)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">236</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="cup_carry_max_tilt_rad|85.0">cup_carry_max_tilt_rad: float = math.radians(85.0)</code></div>
+                        </div>
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Workspace and rate limits (wine guardrail restrictions) - Restoring setup wrist authority</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Workspace and rate limits (wine guardrail restrictions) - Restoring setup wrist authority</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">522</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.50">"rotation_alpha": (0.50, "--rotation-alpha"),</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">522</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.75">"rotation_alpha": (0.75, "--rotation-alpha"),</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">524</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="1.15">"max_target_angular_speed": (1.15, "--max-target-angular-speed"),</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">524</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="2.80">"max_target_angular_speed": (2.80, "--max-target-angular-speed"),</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">908</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="1.05">parser.add_argument("--guardrail-max-angular-speed", type=float, default=1.05)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">908</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="2.60">parser.add_argument("--guardrail-max-angular-speed", type=float, default=2.60)</code></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="revision-iteration">
+                    <div class="revision-title-row">
+                      <h3 class="title is-5"><code>iteration2</code>: add pour authority and alignment assistance</h3>
+                      <span>Log diagnosis: the operator wrist reached about 103 degrees, but the robot bottle tilt stopped around 88 degrees, so the robot still could not pour.</span>
+                    </div>
+                    <div class="revision-diff" aria-label="Wine iteration 2 split code diff">
+                      <div class="revision-diff-head">
+                        <span>Before</span>
+                        <span>After</span>
+                      </div>
+                      <div class="revision-diff-body">
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Cup and bottle tilt gates (wine guardrail restrictions) - Increasing pour authority</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Cup and bottle tilt gates (wine guardrail restrictions) - Increasing pour authority</span></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">235</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="125.0">bottle_pour_max_tilt_rad: float = math.radians(125.0)</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">235</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="135.0">bottle_pour_max_tilt_rad: float = math.radians(135.0)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">237</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="bottle_pour_tilt_boost_gain|1.85">bottle_pour_tilt_boost_gain: float = 1.85</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">241</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="align_assist|True">align_assist: bool = True</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">242</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="32.0">align_assist_start_rad: float = math.radians(32.0)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">244</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.65">align_assist_strength: float = 0.65</code></div>
+                        </div>
+                        <div class="revision-row" data-inline-diff="true">
+                          <div class="revision-cell is-del"><span class="revision-line-no">597</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="0.026">"max_arm_joint_step": (0.026, "--max-arm-joint-step"),</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">597</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="0.045">"max_arm_joint_step": (0.045, "--max-arm-joint-step"),</code></div>
+                        </div>
+                        <div class="revision-row revision-chunk-row">
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Bottle-over-cup alignment and assist (wine guardrail restrictions) - Adding pouring assistance</span></div>
+                          <div class="revision-cell is-chunk-title"><span class="revision-line-no"></span><span class="revision-sign"></span><span class="revision-chunk-text">Category: Bottle-over-cup alignment and assist (wine guardrail restrictions) - Adding pouring assistance</span></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-del"><span class="revision-line-no">318</span><span class="revision-sign">-</span><code class="revision-diff-code" data-diff-kind="del" data-diff-tokens="_cap_tilt|_allowed_bottle_tilt">left = _cap_tilt(left, self._upright_axis("left"), self._allowed_bottle_tilt(left, right, reasons))</code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">318</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="_boost_bottle_pour_tilt">left = self._boost_bottle_pour_tilt(left, reasons)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">322</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="_assist_alignment">left = self._assist_alignment(left, right, reasons)</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">396</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="_assist_alignment|desired_bottle_point">def _assist_alignment(self, left_pose, right_pose, reasons):</code></div>
+                        </div>
+                        <div class="revision-row">
+                          <div class="revision-cell is-empty"><span class="revision-line-no"></span><span class="revision-sign"></span><code class="revision-diff-code"></code></div>
+                          <div class="revision-cell is-add"><span class="revision-line-no">410</span><span class="revision-sign">+</span><code class="revision-diff-code" data-diff-kind="add" data-diff-tokens="desired_bottle_point|target_height">desired_bottle_point = cup_point + np.asarray([0.0, 0.0, target_height])</code></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="task-section-block">
+            <h2 class="title is-3">GLIDE Analysis (<span class="task-emoji" aria-hidden="true">🍷</span> Wine Serving)</h2>
+            <figure class="image">
+              <img src="./static/images/guardrail/qualitative.png"
+                   class="guardrail-qualitative-image"
+                   alt="Placeholder qualitative analysis copied from tomato plate transfer.">
+            </figure>
+            <p class="has-text-justified is-size-6 mt-4">
+              A key failure mode in unguarded teleoperation: discrepancies between the two VR controllers can induce an inter-arm height mismatch that tilts the plate during transport. GLIDE activates during the carry phase and constrains the end-effector height difference, preserving plate stability as the robot lifts and transfers the plate to the elevated surface.
+            </p>
+          </div> -->
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-Teleoperation</h2>
+            <div class="data-comparison-table">
+              <div class="data-comparison-task">
+                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🍷</span> Wine Serving</h3>
+                <div class="data-comparison-tabs" aria-label="Wine Serving teleoperation method slides">
+                  <button class="data-comparison-tab is-open is-active" type="button" data-slide-target="0" aria-pressed="true">
+                    <span class="data-comparison-status" aria-hidden="true">✕</span>
+                    <span class="data-comparison-tab-copy"><span>OpenTV</span></span>
+                  </button>
+                  <button class="data-comparison-tab is-glide" type="button" data-slide-target="1" aria-pressed="false">
+                    <span class="data-comparison-status" aria-hidden="true">✓</span>
+                    <span class="data-comparison-tab-copy"><span>GLIDE</span></span>
+                  </button>
+                  <button class="data-comparison-tab is-manual" type="button" data-slide-target="2" aria-pressed="false">
+                    <span class="data-comparison-status" aria-hidden="true">◐</span>
+                    <span class="data-comparison-tab-copy"><span>Manual</span></span>
+                  </button>
+                </div>
+                <div class="data-comparison-slider">
+                  <button class="data-comparison-arrow is-prev" type="button" data-slide-prev aria-label="Previous teleoperation method"></button>
+                  <div class="carousel results-carousel data-comparison-carousel">
+                    <div class="item data-comparison-cell" data-slide-name="OpenTV">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                        <source src="./static/videos/vanilla_wine_serving_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        Raw CRAFT teleoperation passes arm and hand targets through directly. Operators must <span class="data-comparison-highlight is-open">stabilize, align, tilt, and avoid spills simultaneously</span>.
+                      </p>
+                    </div>
+                    <div class="item data-comparison-cell" data-slide-name="GLIDE">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                        <source src="./static/videos/glide_wine_serving_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        GLIDE learns the correct tool upright axes, makes tilt constraints phase-aware, permits setup motion, boosts bottle pour tilt, and <span class="data-comparison-highlight is-glide">softly assists bottle-over-cup alignment</span> once pouring starts.
+                      </p>
+                    </div>
+                    <div class="item data-comparison-cell" data-slide-name="Manual">
+                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                        <source src="./static/videos/manual_wine_serving_annotated_h264.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                      <p class="data-comparison-placeholder">
+                        The manual guardrail <span class="data-comparison-highlight is-manual">arbitrates one active arm and locks positions during pour-roll</span>. It reduces burden, but can block needed setup motion.
+                      </p>
+                    </div>
+                  </div>
+                  <button class="data-comparison-arrow is-next" type="button" data-slide-next aria-label="Next teleoperation method"></button>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
+            <div class="policy-rollout-grid is-single-task">
+              <div class="policy-rollout-card">
+                <h3 class="policy-rollout-title title is-5"><span class="task-emoji" aria-hidden="true">🍷</span> Wine Serving</h3>
+                <video class="policy-rollout-video" controls muted playsinline preload="metadata" width="1280" height="720">
+                  <source src="./static/videos/wine_serving.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <!--/ Task Switcher. -->
+
+  </div>
+</section>
+
+
+<section class="section" id="Results">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Results</h2>
+
+        <h3 class="title is-4">Expert Demonstration Collection</h3>
+        <figure class="image result-plot">
+          <img class="result-plot-image"
+               src="./static/images/results_data_collection.png"
+               alt="Grouped bar chart comparing OpenTV, Manual, GLIDE, GLIDE iteration 1, and GLIDE iteration 2 success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
+        </figure>
+        <div class="table-container">
+          <table class="table is-bordered is-striped is-hoverable is-fullwidth result-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Tomato Success</th>
+                <th>Tomatoes Left</th>
+                <th>Marker Success</th>
+                <th>Marker Thr./min</th>
+                <th>Wine Success</th>
+                <th>Wine Thr./min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>OpenTV</th>
+                <td>0%</td>
+                <td>0.3</td>
+                <td>10%</td>
+                <td>0.5</td>
+                <td>0%</td>
+                <td>0.0</td>
+              </tr>
+              <tr>
+                <th>Manual</th>
+                <td>20%</td>
+                <td>5.4</td>
+                <td>60%</td>
+                <td>2.8</td>
+                <td>60%</td>
+                <td>0.6</td>
+              </tr>
+              <tr>
+                <th>GLIDE</th>
+                <td>60%</td>
+                <td><strong>7.4</strong></td>
+                <td>70%</td>
+                <td>2.1</td>
+                <td>0%</td>
+                <td>0.0</td>
+              </tr>
+              <tr>
+                <th>GLIDE(iter1)</th>
+                <td>60%</td>
+                <td>7.1</td>
+                <td>60%</td>
+                <td>2.6</td>
+                <td>0%</td>
+                <td>0.0</td>
+              </tr>
+              <tr>
+                <th>GLIDE(iter2)</th>
+                <td><strong>70%</strong></td>
+                <td>6.7</td>
+                <td><strong>90%</strong></td>
+                <td><strong>3.9</strong></td>
+                <td><strong>90%</strong></td>
+                <td><strong>0.9</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="has-text-justified is-size-6 mt-4">
+          GLIDE raises best demonstration success to 70%, 90%, and 90% on Tomato plate transfer, Marker handover &amp; stand, and Wine serving, compared with 0%, 10%, and 0% for unguarded OpenTV teleoperation.
+        </p>
+
+        <h3 class="title is-4 mt-6">Guarded Policy Execution</h3>
+        <figure class="image result-plot">
+          <img class="result-plot-image"
+               src="./static/images/results_policy_deployment.png"
+               alt="Grouped bar chart comparing raw success-only policy deployment, guarded success-only policy deployment, and guarded mixed-data policy deployment success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
+        </figure>
+        <div class="table-container">
+          <table class="table is-bordered is-striped is-hoverable is-fullwidth result-table">
+            <thead>
+              <tr>
+                <th>Training Data</th>
+                <th>Guarded?</th>
+                <th>Tomato Success</th>
+                <th>Tomatoes Left</th>
+                <th>Marker Success</th>
+                <th>Marker Thr./min</th>
+                <th>Wine Success</th>
+                <th>Wine Thr./min</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Success-only</th>
+                <td>No</td>
+                <td>0%</td>
+                <td>3.0</td>
+                <td>20%</td>
+                <td>1.0</td>
+                <td>50%</td>
+                <td><strong>0.6</strong></td>
+              </tr>
+              <tr>
+                <th>Success-only</th>
+                <td>Yes</td>
+                <td>60%</td>
+                <td>6.2</td>
+                <td>50%</td>
+                <td>2.3</td>
+                <td>40%</td>
+                <td>0.4</td>
+              </tr>
+              <tr>
+                <th>Mixed</th>
+                <td>Yes</td>
+                <td><strong>70%</strong></td>
+                <td><strong>6.3</strong></td>
+                <td><strong>60%</strong></td>
+                <td><strong>2.9</strong></td>
+                <td><strong>60%</strong></td>
+                <td>0.5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="has-text-justified is-size-6 mt-4">
+          Guarded deployment improves autonomous execution where raw policy outputs are brittle. The best deployment results use mixed-quality data with guardrail filtering, reaching 70% success on Tomato plate transfer, 60% on Marker handover &amp; stand, and 60% on Wine serving.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- <section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>tbd</code></pre>
+  </div>
+</section> -->
+
+
+<footer class="footer">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This page was adapted from Nerfies' <a href="https://github.com/nerfies/nerfies.github.io">website template</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var switchers = document.querySelectorAll('[data-task-switcher]');
+    var codegenTimers = new WeakMap();
+
+    function normalizeSource(text) {
+      var source = text.replace(/^\n+/, '').replace(/\s+$/, '');
+      var lines = source.split('\n');
+      var indents = lines
+        .filter(function (line) {
+          return line.trim();
+        })
+        .map(function (line) {
+          return (line.match(/^[ \t]*/) || [''])[0].length;
+        });
+      var sharedIndent = indents.length ? Math.min.apply(Math, indents) : 0;
+      if (!sharedIndent) {
+        return source;
+      }
+      return lines.map(function (line) {
+        return line.slice(sharedIndent);
+      }).join('\n');
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+	    function escapeRegExp(text) {
+	      return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	    }
+
+	    function prepareDiffHighlights(source, options) {
+	      var replacements = [];
+	      var escapedSource = escapeHtml(source);
+	      var tokens = options && options.tokens ? options.tokens.split('|') : [];
+	      var tokenClass = options && options.kind === 'del' ? 'revision-token-del' : 'revision-token-add';
+
+	      tokens
+	        .map(function (token) { return token.trim(); })
+	        .filter(Boolean)
+	        .sort(function (a, b) { return b.length - a.length; })
+	        .forEach(function (token, index) {
+	          var escapedToken = escapeHtml(token);
+	          var placeholder = '@@DIFFTOKEN' + String.fromCharCode(65 + index) + '@@';
+	          escapedSource = escapedSource.replace(
+	            new RegExp(escapeRegExp(escapedToken), 'g'),
+	            placeholder
+	          );
+	          replacements.push({
+	            placeholder: placeholder,
+	            html: '<span class="' + tokenClass + '">' + escapedToken + '</span>'
+	          });
+	        });
+
+	      return {
+	        source: escapedSource,
+	        replacements: replacements
+	      };
+	    }
+
+	    function restoreDiffHighlights(html, replacements) {
+	      replacements.forEach(function (replacement) {
+	        html = html.split(replacement.placeholder).join(replacement.html);
+	      });
+	      return html;
+	    }
+
+	    function highlightPython(source, diffOptions) {
+	      var diffHighlights = prepareDiffHighlights(source, diffOptions);
+	      var highlighted = diffHighlights.source.split('\n').map(function (line) {
+	        var commentIndex = line.indexOf('#');
+	        var code = commentIndex >= 0 ? line.slice(0, commentIndex) : line;
+	        var comment = commentIndex >= 0 ? line.slice(commentIndex) : '';
+        var stringTokens = [];
+
+        code = code.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*')/g, function (match) {
+          stringTokens.push('<span class="py-string">' + match + '</span>');
+          return String.fromCharCode(0xe000 + stringTokens.length - 1);
+        });
+        code = code.replace(/\b(class|def|return|if|else|elif|for|while|in|and|or|not|is|None|True|False|from|import|as|with|try|except|finally|raise|pass|break|continue|lambda|yield)\b/g, '<span class="py-keyword">$1</span>');
+        code = code.replace(/\b(self|copy|max|min|clip|range|len|float|int|str|dict|list|set|super)\b/g, '<span class="py-builtin">$1</span>');
+        code = code.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="py-number">$1</span>');
+        code = code.replace(/[\ue000-\uf8ff]/g, function (placeholder) {
+          return stringTokens[placeholder.charCodeAt(0) - 0xe000];
+        });
+
+	        if (comment) {
+	          comment = '<span class="py-comment">' + comment + '</span>';
+	        }
+	        return code + comment;
+	      }).join('\n');
+
+	      return restoreDiffHighlights(highlighted, diffHighlights.replacements);
+	    }
+
+	    function shouldHighlightDiffTokens(code) {
+	      var row = code.closest('.revision-row');
+	      if (!row || row.dataset.inlineDiff !== 'true' || !code.dataset.diffTokens) {
+	        return false;
+	      }
+	      return Boolean(
+	        row.querySelector('.revision-cell.is-del .revision-diff-code[data-diff-tokens]') &&
+	        row.querySelector('.revision-cell.is-add .revision-diff-code[data-diff-tokens]')
+	      );
+	    }
+
+	    function highlightStaticPythonBlocks(root) {
+	      Array.prototype.slice.call((root || document).querySelectorAll('.revision-diff-code')).forEach(function (code) {
+	        if (code.dataset.highlighted === 'true') {
+	          return;
+	        }
+	        code.dataset.fullText = normalizeSource(code.textContent);
+	        code.innerHTML = highlightPython(code.dataset.fullText, {
+	          tokens: shouldHighlightDiffTokens(code) ? code.dataset.diffTokens : '',
+	          kind: code.dataset.diffKind || ''
+	        });
+	        code.dataset.highlighted = 'true';
+	      });
+	    }
+
+	    function syncDiffScroll(source, target, state) {
+	      if (state.syncing) {
+	        return;
+	      }
+	      state.syncing = true;
+	      target.scrollTop = source.scrollTop;
+	      target.scrollLeft = source.scrollLeft;
+	      state.syncing = false;
+	    }
+
+	    function equalizeDiffLineWidths(diff) {
+	      var cells = Array.prototype.slice.call(diff.querySelectorAll('.revision-side .revision-cell'));
+	      var maxWidth = 0;
+	      if (!cells.length) {
+	        return;
+	      }
+
+	      cells.forEach(function (cell) {
+	        cell.style.minWidth = '';
+	      });
+	      cells.forEach(function (cell) {
+	        maxWidth = Math.max(maxWidth, cell.scrollWidth);
+	      });
+	      cells.forEach(function (cell) {
+	        cell.style.minWidth = maxWidth + 'px';
+	      });
+	    }
+
+	    function buildSyncedDiffPanes(root) {
+	      Array.prototype.slice.call((root || document).querySelectorAll('.revision-diff')).forEach(function (diff) {
+	        var body = diff.querySelector('.revision-diff-body');
+	        if (!body || diff.dataset.syncedPanes === 'true') {
+	          return;
+	        }
+
+	        var rows = Array.prototype.slice.call(body.children).filter(function (child) {
+	          return child.classList.contains('revision-row');
+	        });
+	        if (!rows.length) {
+	          return;
+	        }
+
+	        var panes = document.createElement('div');
+	        var beforePane = document.createElement('div');
+	        var afterPane = document.createElement('div');
+	        var scrollState = {syncing: false};
+
+	        panes.className = 'revision-diff-panes';
+	        beforePane.className = 'revision-side revision-side-before';
+	        afterPane.className = 'revision-side revision-side-after';
+	        beforePane.setAttribute('tabindex', '0');
+	        afterPane.setAttribute('tabindex', '0');
+
+	        rows.forEach(function (row) {
+	          var beforeCell = row.children[0];
+	          var afterCell = row.children[1];
+	          if (beforeCell) {
+	            beforePane.appendChild(beforeCell);
+	          }
+	          if (afterCell) {
+	            afterPane.appendChild(afterCell);
+	          }
+	        });
+
+	        beforePane.addEventListener('scroll', function () {
+	          syncDiffScroll(beforePane, afterPane, scrollState);
+	        }, {passive: true});
+	        afterPane.addEventListener('scroll', function () {
+	          syncDiffScroll(afterPane, beforePane, scrollState);
+	        }, {passive: true});
+
+	        panes.appendChild(beforePane);
+	        panes.appendChild(afterPane);
+	        body.replaceWith(panes);
+	        diff.dataset.syncedPanes = 'true';
+	        equalizeDiffLineWidths(diff);
+	      });
+	    }
+
+    function getCodegenParts(block) {
+      return {
+        prompt: block.querySelector('[data-codegen-prompt]'),
+        code: block.querySelector('[data-codegen-code]'),
+        status: block.querySelector('.codegen-status')
+      };
+    }
+
+    function prepareCodegen(block) {
+      var parts = getCodegenParts(block);
+      if (parts.prompt && !parts.prompt.dataset.fullText) {
+        parts.prompt.dataset.fullText = normalizeSource(parts.prompt.textContent);
+      }
+      if (parts.code && !parts.code.dataset.fullText) {
+        parts.code.dataset.fullText = normalizeSource(parts.code.textContent);
+      }
+      return parts;
+    }
+
+    function clearCodegenTimers(block) {
+      (codegenTimers.get(block) || []).forEach(function (timer) {
+        window.clearTimeout(timer);
+      });
+      codegenTimers.set(block, []);
+    }
+
+    function scheduleCodegen(block, callback, delay) {
+      var timers = codegenTimers.get(block) || [];
+      var timer = window.setTimeout(callback, delay);
+      timers.push(timer);
+      codegenTimers.set(block, timers);
+    }
+
+    function resetCodegen(block) {
+      var parts = prepareCodegen(block);
+      clearCodegenTimers(block);
+      block.classList.remove('is-generating', 'is-complete');
+      block.dataset.animated = 'false';
+      if (parts.status) {
+        parts.status.textContent = 'ready';
+      }
+      if (parts.prompt) {
+        parts.prompt.textContent = '';
+      }
+      if (parts.code) {
+        parts.code.innerHTML = '';
+      }
+    }
+
+    function typeText(block, element, text, charsPerTick, delay, onDone, render) {
+      var index = 0;
+
+      function tick() {
+        index = Math.min(index + charsPerTick, text.length);
+        if (render) {
+          element.innerHTML = render(text.slice(0, index));
+        } else {
+          element.textContent = text.slice(0, index);
+        }
+        if (element.parentElement) {
+          element.parentElement.scrollTop = element.parentElement.scrollHeight;
+        }
+        if (index < text.length) {
+          scheduleCodegen(block, tick, delay);
+        } else if (onDone) {
+          onDone();
+        }
+      }
+
+      tick();
+    }
+
+    function startCodegen(block, force) {
+      if (!block || (!force && block.dataset.animated === 'true')) {
+        return;
+      }
+
+      var parts = prepareCodegen(block);
+      clearCodegenTimers(block);
+      block.dataset.animated = 'true';
+      block.classList.add('is-generating');
+      block.classList.remove('is-complete');
+
+      if (parts.status) {
+        parts.status.textContent = 'reading prompt';
+      }
+      if (parts.prompt) {
+        parts.prompt.textContent = '';
+      }
+      if (parts.code) {
+        parts.code.innerHTML = '';
+      }
+
+      typeText(block, parts.prompt, parts.prompt.dataset.fullText, 10, 16, function () {
+        if (parts.status) {
+          parts.status.textContent = 'generating';
+        }
+        scheduleCodegen(block, function () {
+          typeText(block, parts.code, parts.code.dataset.fullText, 18, 12, function () {
+            block.classList.remove('is-generating');
+            block.classList.add('is-complete');
+            if (parts.status) {
+              parts.status.textContent = 'complete';
+            }
+          }, highlightPython);
+        }, 180);
+      });
+    }
+
+    function codegenIsVisible(block) {
+      if (!block || block.closest('[hidden]')) {
+        return false;
+      }
+      var rect = block.getBoundingClientRect();
+      var height = window.innerHeight || document.documentElement.clientHeight;
+      return rect.top < height * 0.82 && rect.bottom > height * 0.18;
+    }
+
+    var codegenObserver = null;
+    if ('IntersectionObserver' in window) {
+      codegenObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && !entry.target.closest('[hidden]')) {
+            startCodegen(entry.target, false);
+          }
+        });
+      }, {threshold: 0.28});
+    }
+
+	    highlightStaticPythonBlocks(document);
+	    buildSyncedDiffPanes(document);
+	    window.addEventListener('resize', function () {
+	      Array.prototype.slice.call(document.querySelectorAll('.revision-diff[data-synced-panes="true"]')).forEach(equalizeDiffLineWidths);
+	    });
+
+    function attemptVideoPlay(video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      var playPromise = video.play();
+      if (playPromise && playPromise.catch) {
+        playPromise.catch(function () {});
+      }
+    }
+
+    function restartAndPlayVideo(video) {
+      if (!video.dataset.wasVisible) {
+        try {
+          video.currentTime = 0;
+        } catch (error) {}
+      }
+      video.dataset.wasVisible = 'true';
+      attemptVideoPlay(video);
+    }
+
+    function stopAndResetVideo(video) {
+      video.pause();
+      video.dataset.wasVisible = '';
+      try {
+        video.currentTime = 0;
+      } catch (error) {}
+    }
+
+    function videoCanAutoplay(video) {
+      var rect = video.getBoundingClientRect();
+      var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      return !video.closest('[hidden]') &&
+        video.offsetParent !== null &&
+        rect.top < viewportHeight * 0.88 &&
+        rect.bottom > viewportHeight * 0.12;
+    }
+
+	    function initScrollAutoplayVideos(root) {
+      var videos = Array.prototype.slice.call((root || document).querySelectorAll('video'));
+      videos.forEach(function (video) {
+        video.muted = true;
+        video.defaultMuted = true;
+      });
+
+      if (!('IntersectionObserver' in window)) {
+        return;
+      }
+
+      var videoObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var video = entry.target;
+          if (entry.isIntersecting && videoCanAutoplay(video)) {
+            restartAndPlayVideo(video);
+          } else {
+            stopAndResetVideo(video);
+          }
+        });
+      }, {threshold: 0.45});
+
+      videos.forEach(function (video) {
+        videoObserver.observe(video);
+      });
+    }
+
+    function initDataComparisonSliders(root) {
+      Array.prototype.slice.call((root || document).querySelectorAll('.data-comparison-task')).forEach(function (task) {
+        if (task.dataset.sliderReady === 'true') {
+          return;
+        }
+
+        var carousel = task.querySelector('.data-comparison-carousel');
+        var slides = carousel ? Array.prototype.slice.call(carousel.querySelectorAll('.data-comparison-cell')) : [];
+        var tabs = Array.prototype.slice.call(task.querySelectorAll('[data-slide-target]'));
+        var prev = task.querySelector('[data-slide-prev]');
+        var next = task.querySelector('[data-slide-next]');
+        var scrollTimer = null;
+
+        if (!carousel || !slides.length) {
+          return;
+        }
+
+        task.dataset.sliderReady = 'true';
+
+        function playSlide(index) {
+          slides.forEach(function (slide, slideIndex) {
+            slide.querySelectorAll('video').forEach(function (video) {
+              if (slideIndex === index && videoCanAutoplay(video)) {
+                restartAndPlayVideo(video);
+              } else {
+                stopAndResetVideo(video);
+              }
+            });
+          });
+        }
+
+        function updateActive(index) {
+          task.dataset.activeSlide = index;
+          tabs.forEach(function (tab) {
+            var isActive = Number(tab.dataset.slideTarget) === index;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          });
+        }
+
+        function slideOffset(index) {
+          return slides[index].offsetLeft - carousel.offsetLeft;
+        }
+
+        function nearestSlideIndex() {
+          var closest = 0;
+          var distance = Infinity;
+          slides.forEach(function (slide, index) {
+            var slideDistance = Math.abs((slide.offsetLeft - carousel.offsetLeft) - carousel.scrollLeft);
+            if (slideDistance < distance) {
+              closest = index;
+              distance = slideDistance;
+            }
+          });
+          return closest;
+        }
+
+        function selectSlide(index, behavior) {
+          var targetIndex = (index + slides.length) % slides.length;
+          carousel.scrollTo({
+            left: slideOffset(targetIndex),
+            behavior: behavior || 'smooth'
+          });
+          updateActive(targetIndex);
+          window.setTimeout(function () {
+            playSlide(targetIndex);
+          }, behavior === 'smooth' ? 180 : 0);
+        }
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener('click', function () {
+            selectSlide(Number(tab.dataset.slideTarget), 'smooth');
+          });
+        });
+
+        if (prev) {
+          prev.addEventListener('click', function () {
+            selectSlide(nearestSlideIndex() - 1, 'smooth');
+          });
+        }
+
+        if (next) {
+          next.addEventListener('click', function () {
+            selectSlide(nearestSlideIndex() + 1, 'smooth');
+          });
+        }
+
+        carousel.addEventListener('scroll', function () {
+          window.clearTimeout(scrollTimer);
+          scrollTimer = window.setTimeout(function () {
+            var activeIndex = nearestSlideIndex();
+            updateActive(activeIndex);
+            playSlide(activeIndex);
+          }, 80);
+        }, {passive: true});
+
+        updateActive(0);
+        selectSlide(0, 'auto');
+      });
+
+    }
+
+    function initRevisionSliders(root) {
+      Array.prototype.slice.call((root || document).querySelectorAll('[data-revision-slider]')).forEach(function (slider) {
+        if (slider.dataset.sliderReady === 'true') {
+          return;
+        }
+
+        var track = slider.querySelector('.revision-sequence');
+        var slides = track ? Array.prototype.slice.call(track.querySelectorAll('.revision-iteration')) : [];
+        var tabs = Array.prototype.slice.call(slider.querySelectorAll('[data-revision-target]'));
+
+        if (!track || !slides.length) {
+          return;
+        }
+
+        slider.dataset.sliderReady = 'true';
+
+        function updateActive(index) {
+          slider.dataset.activeSlide = index;
+          tabs.forEach(function (tab) {
+            var isActive = Number(tab.dataset.revisionTarget) === index;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          });
+        }
+
+        function slideOffset(index) {
+          return slides[index].offsetLeft - track.offsetLeft;
+        }
+
+        function selectSlide(index, behavior) {
+          var targetIndex = (index + slides.length) % slides.length;
+          track.scrollTo({
+            left: slideOffset(targetIndex),
+            behavior: behavior || 'smooth'
+          });
+          updateActive(targetIndex);
+          window.setTimeout(function () {
+            Array.prototype.slice.call(slider.querySelectorAll('.revision-diff[data-synced-panes="true"]')).forEach(equalizeDiffLineWidths);
+          }, behavior === 'smooth' ? 180 : 0);
+        }
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener('click', function () {
+            selectSlide(Number(tab.dataset.revisionTarget), 'smooth');
+          });
+        });
+
+        updateActive(0);
+        selectSlide(0, 'auto');
+      });
+    }
+
+    function playActiveDataComparisonVideos(root) {
+      Array.prototype.slice.call((root || document).querySelectorAll('.data-comparison-task')).forEach(function (task) {
+        var carousel = task.querySelector('.data-comparison-carousel');
+        var slides = carousel ? Array.prototype.slice.call(carousel.querySelectorAll('.data-comparison-cell')) : [];
+        var activeIndex = Number(task.dataset.activeSlide || 0);
+        slides.forEach(function (slide, slideIndex) {
+          slide.querySelectorAll('video').forEach(function (video) {
+            if (slideIndex === activeIndex && videoCanAutoplay(video)) {
+              restartAndPlayVideo(video);
+            } else {
+              stopAndResetVideo(video);
+            }
+          });
+        });
+      });
+    }
+
+		    initScrollAutoplayVideos(document);
+	    initDataComparisonSliders(document);
+	    initRevisionSliders(document);
+
+	    switchers.forEach(function (switcher) {
+      var buttons = Array.prototype.slice.call(switcher.querySelectorAll('[data-task-button]'));
+      var panels = Array.prototype.slice.call(switcher.querySelectorAll('[data-task-panel]'));
+      var codegenBlocks = Array.prototype.slice.call(switcher.querySelectorAll('[data-codegen]'));
+
+      codegenBlocks.forEach(function (block) {
+        resetCodegen(block);
+        if (codegenObserver) {
+          codegenObserver.observe(block);
+        }
+      });
+
+      function restartActiveCodegen(taskName) {
+        var panel = switcher.querySelector('[data-task-panel="' + taskName + '"]');
+        var block = panel ? panel.querySelector('[data-codegen]') : null;
+        if (!block) {
+          return;
+        }
+        resetCodegen(block);
+        if (!codegenObserver || codegenIsVisible(block)) {
+          startCodegen(block, true);
+        }
+      }
+
+      function selectTask(taskName) {
+        buttons.forEach(function (button) {
+          var isActive = button.getAttribute('data-task-button') === taskName;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        panels.forEach(function (panel) {
+          var isActive = panel.getAttribute('data-task-panel') === taskName;
+          panel.classList.toggle('is-active', isActive);
+          panel.hidden = !isActive;
+          panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+
+          if (!isActive) {
+            panel.querySelectorAll('video').forEach(function (video) {
+              video.pause();
+            });
+          }
+        });
+
+        restartActiveCodegen(taskName);
+        playActiveDataComparisonVideos(switcher);
+      }
+
+      buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          selectTask(button.getAttribute('data-task-button'));
+        });
+      });
+
+      var activeButton = switcher.querySelector('.task-switcher-button.is-active');
+      if (activeButton) {
+        selectTask(activeButton.getAttribute('data-task-button'));
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
