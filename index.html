@@ -125,30 +125,33 @@
     <!-- Task Switcher. -->
     <div class="task-switcher" data-task-switcher>
       <nav class="task-switcher-nav" aria-label="Task selection">
-        <button class="task-switcher-button is-active"
-                type="button"
-                data-task-button="tomato"
-                aria-controls="task-panel-tomato"
-                aria-pressed="true">
-          <span class="task-switcher-button-icon" aria-hidden="true">🍅</span>
-          <span>Tomato Plate Transfer</span>
-        </button>
-        <button class="task-switcher-button"
-                type="button"
-                data-task-button="marker"
-                aria-controls="task-panel-marker"
-                aria-pressed="false">
-          <span class="task-switcher-button-icon" aria-hidden="true">🖍️</span>
-          <span>Marker Handover &amp; Stand</span>
-        </button>
-        <button class="task-switcher-button"
-                type="button"
-                data-task-button="wine"
-                aria-controls="task-panel-wine"
-                aria-pressed="false">
-          <span class="task-switcher-button-icon" aria-hidden="true">🍷</span>
-          <span>Wine Serving</span>
-        </button>
+        <div class="task-switcher-title">Task Selection</div>
+        <div class="task-switcher-button-row">
+          <button class="task-switcher-button is-active"
+                  type="button"
+                  data-task-button="tomato"
+                  aria-controls="task-panel-tomato"
+                  aria-pressed="true">
+            <span class="task-switcher-button-icon" aria-hidden="true">🍅</span>
+            <span>Tomato Plate Transfer</span>
+          </button>
+          <button class="task-switcher-button"
+                  type="button"
+                  data-task-button="marker"
+                  aria-controls="task-panel-marker"
+                  aria-pressed="false">
+            <span class="task-switcher-button-icon" aria-hidden="true">🖍️</span>
+            <span>Marker Handover &amp; Stand</span>
+          </button>
+          <button class="task-switcher-button"
+                  type="button"
+                  data-task-button="wine"
+                  aria-controls="task-panel-wine"
+                  aria-pressed="false">
+            <span class="task-switcher-button-icon" aria-hidden="true">🍷</span>
+            <span>Wine Serving</span>
+          </button>
+        </div>
       </nav>
 
       <div class="task-switcher-panels">
@@ -174,6 +177,43 @@
             <p class="task-description-note">
               <i>Note: visual outlines in the images are added only for readability; the underlying robot observations are otherwise unedited.</i>
             </p>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-Teleoperation</h2>
+            <div class="data-comparison-table">
+              <div class="data-comparison-task">
+                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🍅</span> Tomato Plate Transfer</h3>
+                <div class="data-comparison-static-grid">
+                  <div class="data-comparison-cell" data-slide-name="OpenTV">
+                    <div class="data-comparison-card-header">
+                      <span class="data-comparison-status is-open" aria-hidden="true">✕</span>
+                      <span>OpenTV</span>
+                    </div>
+                    <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
+                      <source src="./static/videos/vanilla_teleop_annotated_h264.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    <p class="data-comparison-placeholder">
+                      Raw teleoperation treats the two arms independently. During loaded transport, <span class="data-comparison-highlight is-open">controller mismatch can create height differences</span> between grippers, tilt the plate, and spill tomatoes.
+                    </p>
+                  </div>
+                  <div class="data-comparison-cell" data-slide-name="GLIDE">
+                    <div class="data-comparison-card-header">
+                      <span class="data-comparison-status is-glide" aria-hidden="true">✓</span>
+                      <span>GLIDE</span>
+                    </div>
+                    <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
+                      <source src="./static/videos/glide_teleop_annotated_h264.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    <p class="data-comparison-placeholder">
+                      GLIDE treats both grippers as a coupled tray: it <span class="data-comparison-highlight is-glide">limits carry speed, blocks drops and compression, keeps both rims level</span>, and coordinates gripper open/close.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="task-section-block">
@@ -377,62 +417,6 @@
           </div> -->
 
           <div class="task-section-block">
-            <h2 class="title is-3">GLIDE-Teleoperation</h2>
-            <div class="data-comparison-table">
-              <div class="data-comparison-task">
-                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🍅</span> Tomato Plate Transfer</h3>
-                <div class="data-comparison-tabs" aria-label="Tomato Plate Transfer teleoperation method slides">
-                  <button class="data-comparison-tab is-open is-active" type="button" data-slide-target="0" aria-pressed="true">
-                    <span class="data-comparison-status" aria-hidden="true">✕</span>
-                    <span class="data-comparison-tab-copy"><span>OpenTV</span></span>
-                  </button>
-                  <button class="data-comparison-tab is-glide" type="button" data-slide-target="1" aria-pressed="false">
-                    <span class="data-comparison-status" aria-hidden="true">✓</span>
-                    <span class="data-comparison-tab-copy"><span>GLIDE</span></span>
-                  </button>
-                  <button class="data-comparison-tab is-manual" type="button" data-slide-target="2" aria-pressed="false">
-                    <span class="data-comparison-status" aria-hidden="true">◐</span>
-                    <span class="data-comparison-tab-copy"><span>Manual</span></span>
-                  </button>
-                </div>
-                <div class="data-comparison-slider">
-                  <button class="data-comparison-arrow is-prev" type="button" data-slide-prev aria-label="Previous teleoperation method"></button>
-                  <div class="carousel results-carousel data-comparison-carousel">
-                    <div class="item data-comparison-cell" data-slide-name="OpenTV">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
-                        <source src="./static/videos/vanilla_teleop_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        Raw teleoperation treats the two arms independently. During loaded transport, <span class="data-comparison-highlight is-open">controller mismatch can create height differences</span> between grippers, tilt the plate, and spill tomatoes.
-                      </p>
-                    </div>
-                    <div class="item data-comparison-cell" data-slide-name="GLIDE">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
-                        <source src="./static/videos/glide_teleop_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        GLIDE treats both grippers as a coupled tray: it <span class="data-comparison-highlight is-glide">limits carry speed, blocks drops and compression, keeps both rims level</span>, and coordinates gripper open/close.
-                      </p>
-                    </div>
-                    <div class="item data-comparison-cell" data-slide-name="Manual">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
-                        <source src="./static/videos/manual_teleop_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        The manual filter <span class="data-comparison-highlight is-manual">keeps the plate nearly level</span>, preserves grasp width, and limits wrist rotation. These coarse constraints help, but still leave fragile carry timing.
-                      </p>
-                    </div>
-                  </div>
-                  <button class="data-comparison-arrow is-next" type="button" data-slide-next aria-label="Next teleoperation method"></button>
-                  </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="task-section-block">
             <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
             <div class="policy-rollout-grid is-single-task">
               <div class="policy-rollout-card">
@@ -466,6 +450,43 @@
             <p class="task-description-note">
               <i>Note: visual outlines in the images are added only for readability; the underlying robot observations are otherwise unedited.</i>
             </p>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-Teleoperation</h2>
+            <div class="data-comparison-table">
+              <div class="data-comparison-task">
+                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🖍️</span> Marker Handover &amp; Stand</h3>
+                <div class="data-comparison-static-grid">
+                  <div class="data-comparison-cell" data-slide-name="OpenTV">
+                    <div class="data-comparison-card-header">
+                      <span class="data-comparison-status is-open" aria-hidden="true">✕</span>
+                      <span>OpenTV</span>
+                    </div>
+                    <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                      <source src="./static/videos/vanilla_pen_marker_annotated_h264.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    <p class="data-comparison-placeholder">
+                      Raw teleoperation follows controller poses and trigger commands directly. The marker can become upright briefly, then <span class="data-comparison-highlight is-open">topple during release or fast retreat</span>.
+                    </p>
+                  </div>
+                  <div class="data-comparison-cell" data-slide-name="GLIDE">
+                    <div class="data-comparison-card-header">
+                      <span class="data-comparison-status is-glide" aria-hidden="true">✓</span>
+                      <span>GLIDE</span>
+                    </div>
+                    <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                      <source src="./static/videos/glide_pen_marker_annotated_h264.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    <p class="data-comparison-placeholder">
+                      GLIDE adds rate limits, table and spacing guards, handoff detection, relative-motion damping, height alignment, and <span class="data-comparison-highlight is-glide">a release guard with a held pose, upward retreat, and slower opening</span>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="task-section-block">
@@ -716,62 +737,6 @@
           </div> -->
 
           <div class="task-section-block">
-            <h2 class="title is-3">GLIDE-Teleoperation</h2>
-            <div class="data-comparison-table">
-              <div class="data-comparison-task">
-                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🖍️</span> Marker Handover &amp; Stand</h3>
-                <div class="data-comparison-tabs" aria-label="Marker Handover and Stand teleoperation method slides">
-                  <button class="data-comparison-tab is-open is-active" type="button" data-slide-target="0" aria-pressed="true">
-                    <span class="data-comparison-status" aria-hidden="true">✕</span>
-                    <span class="data-comparison-tab-copy"><span>OpenTV</span></span>
-                  </button>
-                  <button class="data-comparison-tab is-glide" type="button" data-slide-target="1" aria-pressed="false">
-                    <span class="data-comparison-status" aria-hidden="true">✓</span>
-                    <span class="data-comparison-tab-copy"><span>GLIDE</span></span>
-                  </button>
-                  <button class="data-comparison-tab is-manual" type="button" data-slide-target="2" aria-pressed="false">
-                    <span class="data-comparison-status" aria-hidden="true">◐</span>
-                    <span class="data-comparison-tab-copy"><span>Manual</span></span>
-                  </button>
-                </div>
-                <div class="data-comparison-slider">
-                  <button class="data-comparison-arrow is-prev" type="button" data-slide-prev aria-label="Previous teleoperation method"></button>
-                  <div class="carousel results-carousel data-comparison-carousel">
-                    <div class="item data-comparison-cell" data-slide-name="OpenTV">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
-                        <source src="./static/videos/vanilla_pen_marker_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        Raw teleoperation follows controller poses and trigger commands directly. The marker can become upright briefly, then <span class="data-comparison-highlight is-open">topple during release or fast retreat</span>.
-                      </p>
-                    </div>
-                    <div class="item data-comparison-cell" data-slide-name="GLIDE">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
-                        <source src="./static/videos/glide_pen_marker_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        GLIDE adds rate limits, table and spacing guards, handoff detection, relative-motion damping, height alignment, and <span class="data-comparison-highlight is-glide">a release guard with a held pose, upward retreat, and slower opening</span>.
-                      </p>
-                    </div>
-                    <div class="item data-comparison-cell" data-slide-name="Manual">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
-                        <source src="./static/videos/manual_pen_marker_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        The manual marker guardrail mainly <span class="data-comparison-highlight is-manual">blocks roll and pitch</span> while leaving yaw and translation active, but does not explicitly manage handoff spacing or final release.
-                      </p>
-                    </div>
-                  </div>
-                  <button class="data-comparison-arrow is-next" type="button" data-slide-next aria-label="Next teleoperation method"></button>
-                  </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="task-section-block">
             <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
             <div class="policy-rollout-grid is-single-task">
               <div class="policy-rollout-card">
@@ -809,6 +774,43 @@
             <p class="task-description-note">
               <i>Note: visual outlines in the images are added only for readability; the underlying robot observations are otherwise unedited.</i>
             </p>
+          </div>
+
+          <div class="task-section-block">
+            <h2 class="title is-3">GLIDE-Teleoperation</h2>
+            <div class="data-comparison-table">
+              <div class="data-comparison-task">
+                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🍷</span> Wine Serving</h3>
+                <div class="data-comparison-static-grid">
+                  <div class="data-comparison-cell" data-slide-name="OpenTV">
+                    <div class="data-comparison-card-header">
+                      <span class="data-comparison-status is-open" aria-hidden="true">✕</span>
+                      <span>OpenTV</span>
+                    </div>
+                    <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                      <source src="./static/videos/vanilla_wine_serving_annotated_h264.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    <p class="data-comparison-placeholder">
+                      Raw CRAFT teleoperation passes arm and hand targets through directly. Operators must <span class="data-comparison-highlight is-open">stabilize, align, tilt, and avoid spills simultaneously</span>.
+                    </p>
+                  </div>
+                  <div class="data-comparison-cell" data-slide-name="GLIDE">
+                    <div class="data-comparison-card-header">
+                      <span class="data-comparison-status is-glide" aria-hidden="true">✓</span>
+                      <span>GLIDE</span>
+                    </div>
+                    <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
+                      <source src="./static/videos/glide_wine_serving_annotated_h264.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    <p class="data-comparison-placeholder">
+                      GLIDE learns the correct tool upright axes, makes tilt constraints phase-aware, permits setup motion, boosts bottle pour tilt, and <span class="data-comparison-highlight is-glide">softly assists bottle-over-cup alignment</span> once pouring starts.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="task-section-block">
@@ -1043,62 +1045,6 @@
           </div> -->
 
           <div class="task-section-block">
-            <h2 class="title is-3">GLIDE-Teleoperation</h2>
-            <div class="data-comparison-table">
-              <div class="data-comparison-task">
-                <h3 class="data-comparison-task-label title is-5"><span class="task-emoji" aria-hidden="true">🍷</span> Wine Serving</h3>
-                <div class="data-comparison-tabs" aria-label="Wine Serving teleoperation method slides">
-                  <button class="data-comparison-tab is-open is-active" type="button" data-slide-target="0" aria-pressed="true">
-                    <span class="data-comparison-status" aria-hidden="true">✕</span>
-                    <span class="data-comparison-tab-copy"><span>OpenTV</span></span>
-                  </button>
-                  <button class="data-comparison-tab is-glide" type="button" data-slide-target="1" aria-pressed="false">
-                    <span class="data-comparison-status" aria-hidden="true">✓</span>
-                    <span class="data-comparison-tab-copy"><span>GLIDE</span></span>
-                  </button>
-                  <button class="data-comparison-tab is-manual" type="button" data-slide-target="2" aria-pressed="false">
-                    <span class="data-comparison-status" aria-hidden="true">◐</span>
-                    <span class="data-comparison-tab-copy"><span>Manual</span></span>
-                  </button>
-                </div>
-                <div class="data-comparison-slider">
-                  <button class="data-comparison-arrow is-prev" type="button" data-slide-prev aria-label="Previous teleoperation method"></button>
-                  <div class="carousel results-carousel data-comparison-carousel">
-                    <div class="item data-comparison-cell" data-slide-name="OpenTV">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
-                        <source src="./static/videos/vanilla_wine_serving_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        Raw CRAFT teleoperation passes arm and hand targets through directly. Operators must <span class="data-comparison-highlight is-open">stabilize, align, tilt, and avoid spills simultaneously</span>.
-                      </p>
-                    </div>
-                    <div class="item data-comparison-cell" data-slide-name="GLIDE">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
-                        <source src="./static/videos/glide_wine_serving_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        GLIDE learns the correct tool upright axes, makes tilt constraints phase-aware, permits setup motion, boosts bottle pour tilt, and <span class="data-comparison-highlight is-glide">softly assists bottle-over-cup alignment</span> once pouring starts.
-                      </p>
-                    </div>
-                    <div class="item data-comparison-cell" data-slide-name="Manual">
-                      <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
-                        <source src="./static/videos/manual_wine_serving_annotated_h264.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                      <p class="data-comparison-placeholder">
-                        The manual guardrail <span class="data-comparison-highlight is-manual">arbitrates one active arm and locks positions during pour-roll</span>. It reduces burden, but can block needed setup motion.
-                      </p>
-                    </div>
-                  </div>
-                  <button class="data-comparison-arrow is-next" type="button" data-slide-next aria-label="Next teleoperation method"></button>
-                  </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="task-section-block">
             <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
             <div class="policy-rollout-grid is-single-task">
               <div class="policy-rollout-card">
@@ -1131,68 +1077,6 @@
                src="./static/images/results_data_collection.png"
                alt="Grouped bar chart comparing OpenTV, Manual, GLIDE, GLIDE iteration 1, and GLIDE iteration 2 success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
         </figure>
-        <div class="table-container">
-          <table class="table is-bordered is-striped is-hoverable is-fullwidth result-table">
-            <thead>
-              <tr>
-                <th>Method</th>
-                <th>Tomato Success</th>
-                <th>Tomatoes Left</th>
-                <th>Marker Success</th>
-                <th>Marker Thr./min</th>
-                <th>Wine Success</th>
-                <th>Wine Thr./min</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th>OpenTV</th>
-                <td>0%</td>
-                <td>0.3</td>
-                <td>10%</td>
-                <td>0.5</td>
-                <td>0%</td>
-                <td>0.0</td>
-              </tr>
-              <tr>
-                <th>Manual</th>
-                <td>20%</td>
-                <td>5.4</td>
-                <td>60%</td>
-                <td>2.8</td>
-                <td>60%</td>
-                <td>0.6</td>
-              </tr>
-              <tr>
-                <th>GLIDE</th>
-                <td>60%</td>
-                <td><strong>7.4</strong></td>
-                <td>70%</td>
-                <td>2.1</td>
-                <td>0%</td>
-                <td>0.0</td>
-              </tr>
-              <tr>
-                <th>GLIDE(iter1)</th>
-                <td>60%</td>
-                <td>7.1</td>
-                <td>60%</td>
-                <td>2.6</td>
-                <td>0%</td>
-                <td>0.0</td>
-              </tr>
-              <tr>
-                <th>GLIDE(iter2)</th>
-                <td><strong>70%</strong></td>
-                <td>6.7</td>
-                <td><strong>90%</strong></td>
-                <td><strong>3.9</strong></td>
-                <td><strong>90%</strong></td>
-                <td><strong>0.9</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
         <p class="has-text-justified is-size-6 mt-4">
           GLIDE raises best demonstration success to 70%, 90%, and 90% on Tomato plate transfer, Marker handover &amp; stand, and Wine serving, compared with 0%, 10%, and 0% for unguarded OpenTV teleoperation.
         </p>
@@ -1203,54 +1087,6 @@
                src="./static/images/results_policy_deployment.png"
                alt="Grouped bar chart comparing raw success-only policy deployment, guarded success-only policy deployment, and guarded mixed-data policy deployment success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
         </figure>
-        <div class="table-container">
-          <table class="table is-bordered is-striped is-hoverable is-fullwidth result-table">
-            <thead>
-              <tr>
-                <th>Training Data</th>
-                <th>Guarded?</th>
-                <th>Tomato Success</th>
-                <th>Tomatoes Left</th>
-                <th>Marker Success</th>
-                <th>Marker Thr./min</th>
-                <th>Wine Success</th>
-                <th>Wine Thr./min</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th>Success-only</th>
-                <td>No</td>
-                <td>0%</td>
-                <td>3.0</td>
-                <td>20%</td>
-                <td>1.0</td>
-                <td>50%</td>
-                <td><strong>0.6</strong></td>
-              </tr>
-              <tr>
-                <th>Success-only</th>
-                <td>Yes</td>
-                <td>60%</td>
-                <td>6.2</td>
-                <td>50%</td>
-                <td>2.3</td>
-                <td>40%</td>
-                <td>0.4</td>
-              </tr>
-              <tr>
-                <th>Mixed</th>
-                <td>Yes</td>
-                <td><strong>70%</strong></td>
-                <td><strong>6.3</strong></td>
-                <td><strong>60%</strong></td>
-                <td><strong>2.9</strong></td>
-                <td><strong>60%</strong></td>
-                <td>0.5</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
         <p class="has-text-justified is-size-6 mt-4">
           Guarded deployment improves autonomous execution where raw policy outputs are brittle. The best deployment results use mixed-quality data with guardrail filtering, reaching 70% success on Tomato plate transfer, 60% on Marker handover &amp; stand, and 60% on Wine serving.
         </p>
@@ -1853,11 +1689,54 @@
       });
     }
 
-		    initScrollAutoplayVideos(document);
-	    initDataComparisonSliders(document);
-	    initRevisionSliders(document);
+    function initFloatingTaskSwitchers(root) {
+      var taskSwitchers = Array.prototype.slice.call((root || document).querySelectorAll('[data-task-switcher]'));
+      if (!taskSwitchers.length) {
+        return;
+      }
 
-	    switchers.forEach(function (switcher) {
+      var ticking = false;
+
+      function updateFloatingTaskSwitchers() {
+        var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        var mobileLayout = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+        taskSwitchers.forEach(function (switcher) {
+          var nav = switcher.querySelector('.task-switcher-nav');
+          if (!nav) {
+            return;
+          }
+
+          if (mobileLayout) {
+            nav.classList.remove('is-visible');
+            return;
+          }
+
+          var rect = switcher.getBoundingClientRect();
+          var isInTaskRegion = rect.top < viewportHeight * 0.55 && rect.bottom > viewportHeight * 0.45;
+          nav.classList.toggle('is-visible', isInTaskRegion);
+        });
+        ticking = false;
+      }
+
+      function requestUpdateFloatingTaskSwitchers() {
+        if (ticking) {
+          return;
+        }
+        ticking = true;
+        window.requestAnimationFrame(updateFloatingTaskSwitchers);
+      }
+
+      updateFloatingTaskSwitchers();
+      window.addEventListener('scroll', requestUpdateFloatingTaskSwitchers, { passive: true });
+      window.addEventListener('resize', requestUpdateFloatingTaskSwitchers);
+    }
+
+			    initScrollAutoplayVideos(document);
+		    initDataComparisonSliders(document);
+		    initRevisionSliders(document);
+		    initFloatingTaskSwitchers(document);
+
+		    switchers.forEach(function (switcher) {
       var buttons = Array.prototype.slice.call(switcher.querySelectorAll('[data-task-button]'));
       var panels = Array.prototype.slice.call(switcher.querySelectorAll('[data-task-panel]'));
       var codegenBlocks = Array.prototype.slice.call(switcher.querySelectorAll('[data-codegen]'));
