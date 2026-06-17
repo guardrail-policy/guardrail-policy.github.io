@@ -2,16 +2,6 @@ body {
   font-family: 'Noto Sans', sans-serif;
 }
 
-.abstract-kw {
-  font-weight: 600;
-  color: #0d47a1;
-  background: linear-gradient(180deg, transparent 55%, rgba(13, 71, 161, 0.2) 55%);
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  padding: 0 0.08em;
-}
-
-
 .footer .icon-link {
     font-size: 25px;
     color: #000;
@@ -168,7 +158,6 @@ body {
   height: auto;
 }
 
-.image .guardrail-overview-image,
 .image .guardrail-qualitative-image {
   display: block;
   width: 80%;
@@ -511,13 +500,15 @@ body {
 .revision-iteration {
   flex: 0 0 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid #d6dce5;
   border-radius: 8px;
   background: #fff;
 }
 
 .revision-title-row {
+  position: relative;
+  z-index: 8;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -532,7 +523,8 @@ body {
   font-size: 1rem;
 }
 
-.revision-title-row span {
+.revision-title-row > span,
+.revision-log-diagnosis {
   max-width: 52%;
   color: #5c6674;
   font-family: 'Google Sans', sans-serif;
@@ -540,6 +532,76 @@ body {
   font-weight: 600;
   line-height: 1.35;
   text-align: right;
+}
+
+.revision-log-diagnosis {
+  position: relative;
+  cursor: zoom-in;
+}
+
+.revision-log-diagnosis:focus-visible {
+  outline: 2px solid #3273dc;
+  outline-offset: 3px;
+  border-radius: 5px;
+}
+
+.revision-log-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  margin: 0 0.18rem;
+  padding: 0.08rem 0.34rem 0.09rem;
+  border: 1px solid rgba(50, 115, 220, 0.28);
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  vertical-align: baseline;
+}
+
+.revision-log-hint::before {
+  content: "";
+  display: inline-block;
+  width: 0.48rem;
+  height: 0.62rem;
+  background: currentColor;
+  clip-path: polygon(0 0, 0 100%, 28% 78%, 46% 100%, 62% 91%, 45% 69%, 72% 69%);
+  transform: rotate(-10deg);
+}
+
+.revision-log-preview {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  right: 0;
+  z-index: 30;
+  width: min(25rem, 48vw);
+  padding: 0.35rem;
+  border: 1px solid rgba(50, 115, 220, 0.32);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.24);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-0.25rem) scale(0.98);
+  transform-origin: top right;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.revision-log-diagnosis.is-preview-open .revision-log-preview,
+.revision-log-diagnosis:hover .revision-log-preview,
+.revision-log-diagnosis:focus-within .revision-log-preview {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.revision-log-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  background: #111;
 }
 
 .revision-diff {
@@ -565,6 +627,14 @@ body {
   border-left: 1px solid #d0d7de;
 }
 
+.revision-diff.is-unified .revision-diff-head {
+  grid-template-columns: 1fr;
+}
+
+.revision-diff.is-unified .revision-diff-head span + span {
+  border-left: 0;
+}
+
 .revision-diff-body {
   max-height: 30rem;
   overflow: auto;
@@ -579,6 +649,14 @@ body {
 .revision-diff-panes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.revision-diff-unified {
+  max-height: 30rem;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .revision-side {
@@ -598,15 +676,15 @@ body {
 
 .revision-cell {
   display: grid;
-  grid-template-columns: 3.3rem 1.45rem max-content;
-  width: max-content;
+  grid-template-columns: 3.3rem 1.45rem minmax(0, 1fr);
+  width: 100%;
   min-width: 100%;
-  min-height: 1.9rem;
+  min-height: 1.55rem;
   border-top: 1px solid rgba(208, 215, 222, 0.42);
   color: #24292f;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 0.72rem;
-  line-height: 1.45;
+  font-size: 0.82rem;
+  line-height: 1.25;
 }
 
 .revision-row .revision-cell {
@@ -625,9 +703,13 @@ body {
   width: auto;
 }
 
+.revision-diff-unified .revision-cell {
+  border-left: 0;
+}
+
 .revision-line-no,
 .revision-sign {
-  padding: 0.25rem 0.35rem;
+  padding: 0.16rem 0.35rem;
   color: #57606a;
   text-align: right;
   user-select: none;
@@ -639,11 +721,12 @@ body {
 
 .revision-diff-code {
   display: block;
-  padding: 0.25rem 0.65rem;
+  padding: 0.16rem 0.65rem;
   overflow: visible;
   background: transparent;
   color: inherit;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .revision-cell.is-context {
@@ -657,7 +740,7 @@ body {
 .revision-cell.is-chunk-title {
   background: #ddf4ff;
   color: #57606a;
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   font-weight: 700;
 }
 
@@ -667,8 +750,9 @@ body {
 }
 
 .revision-chunk-text {
-  padding: 0.28rem 0.65rem;
-  white-space: pre;
+  padding: 0.18rem 0.65rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .revision-cell.is-del {
@@ -1119,11 +1203,32 @@ body {
     display: block;
   }
 
-  .revision-title-row span {
+  .revision-title-row > span {
     display: block;
     max-width: none;
     margin-top: 0.25rem;
     text-align: left;
+  }
+
+  .revision-log-diagnosis {
+    display: block;
+    max-width: none;
+    margin-top: 0.25rem;
+    text-align: left;
+  }
+
+  .revision-log-preview {
+    right: auto;
+    left: 50%;
+    width: min(24rem, calc(100vw - 2rem));
+    transform: translateX(-50%) translateY(-0.25rem) scale(0.98);
+    transform-origin: top center;
+  }
+
+  .revision-log-diagnosis.is-preview-open .revision-log-preview,
+  .revision-log-diagnosis:hover .revision-log-preview,
+  .revision-log-diagnosis:focus-within .revision-log-preview {
+    transform: translateX(-50%) translateY(0) scale(1);
   }
 
   .revision-diff-body {
@@ -1134,14 +1239,18 @@ body {
     max-height: 24rem;
   }
 
+  .revision-diff-unified {
+    max-height: 24rem;
+  }
+
   .revision-row {
     grid-template-columns: repeat(2, minmax(24rem, 1fr));
     min-width: 48rem;
   }
 
   .revision-cell {
-    grid-template-columns: 2.8rem 1.25rem max-content;
-    font-size: 0.68rem;
+    grid-template-columns: 2.8rem 1.25rem minmax(0, 1fr);
+    font-size: 0.76rem;
   }
 
   .data-comparison-grid {

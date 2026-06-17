@@ -62,7 +62,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Behavior cloning for robot manipulation relies on expert demonstrations. However, for tasks that require dynamic stability, precise contact timing, or dexterous coordination, human teleoperators may find it <span class="abstract-kw">hard or evenimpossible to collect data</span>. We study this infeasible-demonstration regime and propose GLIDE, a framework that infers <span class="abstract-kw">task-specific failure modes</span> and converts them into <span class="abstract-kw">executable guardrails</span> for data collection and policy deployment. Given a task description, GLIDE writes guardrails that use robot states to filter teleoperation and policy commands, constrain failure-prone actions, and <span class="abstract-kw">iteratively improve from closed-loop dataset feedback</span>. Across <em>Tomato plate transfer</em>, <em>Marker handover &amp; stand</em>, and <em>Wine serving</em> tasks, GLIDE improves data collection over raw VR teleoperation and manually designed guardrails. After refinement, GLIDE raises data-collection efficiency from <span class="abstract-kw">0-10%</span> to <span class="abstract-kw">70-90%</span> across the three tasks. During policy execution, guarded deployment raises <em>Tomato plate transfer</em> policy success from <span class="abstract-kw">0%</span> to <span class="abstract-kw">60-70%</span>, enabling efficient learning on mixed-quality demonstrations. These results show that
+            Behavior cloning for robot manipulation relies on expert demonstrations. However, for tasks that require dynamic stability, precise contact timing, or dexterous coordination, human teleoperators may find it hard or evenimpossible to collect data. We study this infeasible-demonstration regime and propose GLIDE, a framework that infers task-specific failure modes and converts them into executable guardrails for data collection and policy deployment. Given a task description, GLIDE writes guardrails that use robot states to filter teleoperation and policy commands, constrain failure-prone actions, and iteratively improve from closed-loop dataset feedback. Across <em>Tomato plate transfer</em>, <em>Marker handover &amp; stand</em>, and <em>Wine serving</em> tasks, GLIDE improves data collection over raw VR teleoperation and manually designed guardrails. After refinement, GLIDE raises data-collection efficiency from 0-10% to 70-90% across the three tasks. During policy execution, guarded deployment raises <em>Tomato plate transfer</em> policy success from 0% to 60-70%, enabling efficient learning on mixed-quality demonstrations. These results show that
             GLIDE can support policy learning when direct
             demonstrations are infeasible.
           </p>
@@ -80,32 +80,14 @@
 
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <!-- GLIDE Overview. -->
-        <div class="content">
-          <h2 class="title is-3">GLIDE Overview</h2>
-          <figure class="image">
-            <img src="./static/images/guardrail/teaser.png"
-                 class="guardrail-overview-image"
-                 alt="GLIDE overview showing guarded teleoperation for tomato plate transfer.">
-          </figure>
-          <p class="has-text-justified is-size-6 mt-4">
-            GLIDE converts task descriptions into runtime guardrails that constrain error-prone VR
-            teleoperation, enabling reliable data collection and policy learning for tasks that are difficult to demonstrate directly.
-          </p>
-        </div>
-        <!--/ GLIDE Overview. -->
-      </div>
-    </div>
-
-    <div class="columns is-centered">
-      <div class="column is-full-width">
         <!-- GLIDE Methodology. -->
         <div class="content">
           <h2 class="title is-3">GLIDE Methodology</h2>
           <figure class="image">
-            <img src="./static/images/guardrail/method.png"
-                 class="guardrail-methodology-image"
-                 alt="GLIDE methodology: task description, generated guardrails, user rollouts, self-refinement, and final guarded data collection.">
+            <video class="guardrail-methodology-image" controls muted playsinline preload="metadata" width="3024" height="1384">
+              <source src="./static/videos/method.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
           </figure>
           <p class="has-text-justified is-size-6 mt-4">
             (A) From task description,
@@ -188,7 +170,7 @@
                   <div class="data-comparison-cell" data-slide-name="OpenTV">
                     <div class="data-comparison-card-header">
                       <span class="data-comparison-status is-open" aria-hidden="true">✕</span>
-                      <span>OpenTV</span>
+                      <span>OpenTV (Cheng et al. CoRL 2024)</span>
                     </div>
                     <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
                       <source src="./static/videos/vanilla_teleop_annotated_h264.mp4" type="video/mp4">
@@ -201,14 +183,14 @@
                   <div class="data-comparison-cell" data-slide-name="GLIDE">
                     <div class="data-comparison-card-header">
                       <span class="data-comparison-status is-glide" aria-hidden="true">✓</span>
-                      <span>GLIDE</span>
+                      <span>GLIDE (Ours)</span>
                     </div>
                     <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1080">
                       <source src="./static/videos/glide_teleop_annotated_h264.mp4" type="video/mp4">
                       Your browser does not support the video tag.
                     </video>
                     <p class="data-comparison-placeholder">
-                      GLIDE treats both grippers as a coupled tray: it <span class="data-comparison-highlight is-glide">limits carry speed, blocks drops and compression, keeps both rims level</span>, and coordinates gripper open/close.
+                      GLIDE treats both grippers as a coupled tray: it <span class="data-comparison-highlight is-glide">keep the plate level, preserve grasp width, restrain wrist tilt, and coordinates gripper open/close</span>.
                     </p>
                   </div>
                 </div>
@@ -286,9 +268,16 @@
                   <div class="revision-iteration">
                     <div class="revision-title-row">
                       <h3 class="title is-5"><code>iteration1</code>: make loaded carry gentler after spill episodes</h3>
-                      <span>Log diagnosis: episodes 6-9 spilled after the plate was already grasped; failed runs had faster loaded transport and larger height mismatch.</span>
+                      <div class="revision-log-diagnosis" data-log-preview tabindex="0">
+                        <span><strong>Log diagnosis:</strong> <span class="revision-log-hint">Hover to play</span> episodes 6-9 spilled after the plate was already grasped; failed runs had faster loaded transport and larger height mismatch.</span>
+                        <div class="revision-log-preview" aria-hidden="true">
+                          <video class="revision-log-video" muted loop playsinline preload="metadata" width="1280" height="720">
+                            <source src="./static/videos/plate_iter1.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                      </div>
                     </div>
-                    <div class="revision-diff" aria-label="Tomato iteration 1 split code diff">
+                    <div class="revision-diff" aria-label="Tomato iteration 1 unified code diff">
                       <div class="revision-diff-head">
                         <span>Before</span>
                         <span>After</span>
@@ -340,9 +329,16 @@
                   <div class="revision-iteration">
                     <div class="revision-title-row">
                       <h3 class="title is-5"><code>iteration2</code>: make transport faster without relaxing vertical safety</h3>
-                      <span>Log diagnosis: episode 7 fully closed but spilled during carry; one isotropic filter throttled horizontal and vertical motion together.</span>
+                      <div class="revision-log-diagnosis" data-log-preview tabindex="0">
+                        <span><strong>Log diagnosis:</strong> <span class="revision-log-hint">Hover to play</span> episode 7 fully closed but spilled during carry; one isotropic filter throttled horizontal and vertical motion together.</span>
+                        <div class="revision-log-preview" aria-hidden="true">
+                          <video class="revision-log-video" muted loop playsinline preload="metadata" width="1280" height="720">
+                            <source src="./static/videos/plate_iter2.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                      </div>
                     </div>
-                    <div class="revision-diff" aria-label="Tomato iteration 2 split code diff">
+                    <div class="revision-diff" aria-label="Tomato iteration 2 unified code diff">
                       <div class="revision-diff-head">
                         <span>Before</span>
                         <span>After</span>
@@ -404,18 +400,6 @@
             </div>
           </div>
 
-          <!-- <div class="task-section-block">
-            <h2 class="title is-3">GLIDE Analysis (<span class="task-emoji" aria-hidden="true">🍅</span> Tomato Plate Transfer)</h2>
-            <figure class="image">
-              <img src="./static/images/guardrail/qualitative.png"
-                   class="guardrail-qualitative-image"
-                   alt="Qualitative analysis showing GLIDE limiting relative end-effector height mismatch during tomato plate transfer.">
-            </figure>
-            <p class="has-text-justified is-size-6 mt-4">
-              A key failure mode in unguarded teleoperation: discrepancies between the two VR controllers can induce an inter-arm height mismatch that tilts the plate during transport. GLIDE activates during the carry phase and constrains the end-effector height difference, preserving plate stability as the robot lifts and transfers the plate to the elevated surface.
-            </p>
-          </div> -->
-
           <div class="task-section-block">
             <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
             <div class="policy-rollout-grid is-single-task">
@@ -461,7 +445,7 @@
                   <div class="data-comparison-cell" data-slide-name="OpenTV">
                     <div class="data-comparison-card-header">
                       <span class="data-comparison-status is-open" aria-hidden="true">✕</span>
-                      <span>OpenTV</span>
+                      <span>OpenTV (Cheng et al. CoRL 2024)</span>
                     </div>
                     <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
                       <source src="./static/videos/vanilla_pen_marker_annotated_h264.mp4" type="video/mp4">
@@ -474,7 +458,7 @@
                   <div class="data-comparison-cell" data-slide-name="GLIDE">
                     <div class="data-comparison-card-header">
                       <span class="data-comparison-status is-glide" aria-hidden="true">✓</span>
-                      <span>GLIDE</span>
+                      <span>GLIDE (Ours)</span>
                     </div>
                     <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
                       <source src="./static/videos/glide_pen_marker_annotated_h264.mp4" type="video/mp4">
@@ -574,9 +558,16 @@
                   <div class="revision-iteration">
                     <div class="revision-title-row">
                       <h3 class="title is-5"><code>iteration1</code>: remove lag, then guard the release</h3>
-                      <span>Log diagnosis: raw controller motion was faster than commanded EE motion; failures got the marker upright briefly, then tipped or fell during final opening and retract.</span>
+                      <div class="revision-log-diagnosis" data-log-preview tabindex="0">
+                        <span><strong>Log diagnosis:</strong> <span class="revision-log-hint">Hover to play</span> raw controller motion was faster than commanded EE motion; failures got the marker upright briefly, then tipped or fell during final opening and retract.</span>
+                        <div class="revision-log-preview" aria-hidden="true">
+                          <video class="revision-log-video" muted loop playsinline preload="metadata" width="1280" height="720">
+                            <source src="./static/videos/marker_iter1.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                      </div>
                     </div>
-                    <div class="revision-diff" aria-label="Marker iteration 1 split code diff">
+                    <div class="revision-diff" aria-label="Marker iteration 1 unified code diff">
                       <div class="revision-diff-head">
                         <span>Before</span>
                         <span>After</span>
@@ -664,9 +655,16 @@
                   <div class="revision-iteration">
                     <div class="revision-title-row">
                       <h3 class="title is-5"><code>iteration2</code>: delay and soften the final finger opening</h3>
-                      <span>Log diagnosis: failures were no longer mainly lag, but topples during or immediately after final release.</span>
+                      <div class="revision-log-diagnosis" data-log-preview tabindex="0">
+                        <span><strong>Log diagnosis:</strong> <span class="revision-log-hint">Hover to play</span> failures were no longer mainly lag, but topples during or immediately after final release.</span>
+                        <div class="revision-log-preview" aria-hidden="true">
+                          <video class="revision-log-video" muted loop playsinline preload="metadata" width="1280" height="720">
+                            <source src="./static/videos/marker_iter2.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                      </div>
                     </div>
-                    <div class="revision-diff" aria-label="Marker iteration 2 split code diff">
+                    <div class="revision-diff" aria-label="Marker iteration 2 unified code diff">
                       <div class="revision-diff-head">
                         <span>Before</span>
                         <span>After</span>
@@ -724,18 +722,6 @@
             </div>
           </div>
 
-          <!-- <div class="task-section-block">
-            <h2 class="title is-3">GLIDE Analysis (<span class="task-emoji" aria-hidden="true">🖍️</span> Marker Handover &amp; Stand)</h2>
-            <figure class="image">
-              <img src="./static/images/guardrail/qualitative_new.png"
-                   class="guardrail-qualitative-image"
-                   alt="Placeholder qualitative analysis copied from tomato plate transfer.">
-            </figure>
-            <p class="has-text-justified is-size-6 mt-4">
-              A key failure mode in unguarded teleoperation: discrepancies between the two VR controllers can induce an inter-arm height mismatch that tilts the plate during transport. GLIDE activates during the carry phase and constrains the end-effector height difference, preserving plate stability as the robot lifts and transfers the plate to the elevated surface.
-            </p>
-          </div> -->
-
           <div class="task-section-block">
             <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
             <div class="policy-rollout-grid is-single-task">
@@ -785,7 +771,7 @@
                   <div class="data-comparison-cell" data-slide-name="OpenTV">
                     <div class="data-comparison-card-header">
                       <span class="data-comparison-status is-open" aria-hidden="true">✕</span>
-                      <span>OpenTV</span>
+                      <span>OpenTV (Cheng et al. CoRL 2024)</span>
                     </div>
                     <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
                       <source src="./static/videos/vanilla_wine_serving_annotated_h264.mp4" type="video/mp4">
@@ -798,7 +784,7 @@
                   <div class="data-comparison-cell" data-slide-name="GLIDE">
                     <div class="data-comparison-card-header">
                       <span class="data-comparison-status is-glide" aria-hidden="true">✓</span>
-                      <span>GLIDE</span>
+                      <span>GLIDE (Ours)</span>
                     </div>
                     <video class="data-comparison-video" controls muted playsinline preload="metadata" width="1280" height="1060">
                       <source src="./static/videos/glide_wine_serving_annotated_h264.mp4" type="video/mp4">
@@ -898,9 +884,16 @@
                   <div class="revision-iteration">
                     <div class="revision-title-row">
                       <h3 class="title is-5"><code>iteration1</code>: learn the tool frame and remove setup caps</h3>
-                      <span>Log diagnosis: FK showed local y was closest to world up; the cup and bottle tilt caps were blocking necessary wrist rotation before pouring.</span>
+                      <div class="revision-log-diagnosis" data-log-preview tabindex="0">
+                        <span><strong>Log diagnosis:</strong> <span class="revision-log-hint">Hover to play</span> FK showed local y was closest to world up; the cup and bottle tilt caps were blocking necessary wrist rotation before pouring.</span>
+                        <div class="revision-log-preview" aria-hidden="true">
+                          <video class="revision-log-video" muted loop playsinline preload="metadata" width="1280" height="720">
+                            <source src="./static/videos/wine_iter1.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                      </div>
                     </div>
-                    <div class="revision-diff" aria-label="Wine iteration 1 split code diff">
+                    <div class="revision-diff" aria-label="Wine iteration 1 unified code diff">
                       <div class="revision-diff-head">
                         <span>Before</span>
                         <span>After</span>
@@ -968,9 +961,16 @@
                   <div class="revision-iteration">
                     <div class="revision-title-row">
                       <h3 class="title is-5"><code>iteration2</code>: add pour authority and alignment assistance</h3>
-                      <span>Log diagnosis: the operator wrist reached about 103 degrees, but the robot bottle tilt stopped around 88 degrees, so the robot still could not pour.</span>
+                      <div class="revision-log-diagnosis" data-log-preview tabindex="0">
+                        <span><strong>Log diagnosis:</strong> <span class="revision-log-hint">Hover to play</span> the operator wrist reached about 103 degrees, but the robot bottle tilt stopped around 88 degrees, so the robot still could not pour.</span>
+                        <div class="revision-log-preview" aria-hidden="true">
+                          <video class="revision-log-video" muted loop playsinline preload="metadata" width="1280" height="720">
+                            <source src="./static/videos/wine_iter2.mp4" type="video/mp4">
+                          </video>
+                        </div>
+                      </div>
                     </div>
-                    <div class="revision-diff" aria-label="Wine iteration 2 split code diff">
+                    <div class="revision-diff" aria-label="Wine iteration 2 unified code diff">
                       <div class="revision-diff-head">
                         <span>Before</span>
                         <span>After</span>
@@ -1031,18 +1031,6 @@
               </div>
             </div>
           </div>
-
-          <!-- <div class="task-section-block">
-            <h2 class="title is-3">GLIDE Analysis (<span class="task-emoji" aria-hidden="true">🍷</span> Wine Serving)</h2>
-            <figure class="image">
-              <img src="./static/images/guardrail/qualitative.png"
-                   class="guardrail-qualitative-image"
-                   alt="Placeholder qualitative analysis copied from tomato plate transfer.">
-            </figure>
-            <p class="has-text-justified is-size-6 mt-4">
-              A key failure mode in unguarded teleoperation: discrepancies between the two VR controllers can induce an inter-arm height mismatch that tilts the plate during transport. GLIDE activates during the carry phase and constrains the end-effector height difference, preserving plate stability as the robot lifts and transfers the plate to the elevated surface.
-            </p>
-          </div> -->
 
           <div class="task-section-block">
             <h2 class="title is-3">GLIDE-&pi;<sub>0.5</sub> Policy</h2>
@@ -1241,38 +1229,20 @@
 	      });
 	    }
 
-	    function syncDiffScroll(source, target, state) {
-	      if (state.syncing) {
-	        return;
-	      }
-	      state.syncing = true;
-	      target.scrollTop = source.scrollTop;
-	      target.scrollLeft = source.scrollLeft;
-	      state.syncing = false;
+	    function isMeaningfulDiffCell(cell) {
+	      return cell && !cell.classList.contains('is-empty');
 	    }
 
-	    function equalizeDiffLineWidths(diff) {
-	      var cells = Array.prototype.slice.call(diff.querySelectorAll('.revision-side .revision-cell'));
-	      var maxWidth = 0;
-	      if (!cells.length) {
-	        return;
+	    function appendUnifiedDiffCell(container, cell) {
+	      if (isMeaningfulDiffCell(cell)) {
+	        container.appendChild(cell);
 	      }
-
-	      cells.forEach(function (cell) {
-	        cell.style.minWidth = '';
-	      });
-	      cells.forEach(function (cell) {
-	        maxWidth = Math.max(maxWidth, cell.scrollWidth);
-	      });
-	      cells.forEach(function (cell) {
-	        cell.style.minWidth = maxWidth + 'px';
-	      });
 	    }
 
-	    function buildSyncedDiffPanes(root) {
+	    function buildUnifiedDiffPanes(root) {
 	      Array.prototype.slice.call((root || document).querySelectorAll('.revision-diff')).forEach(function (diff) {
 	        var body = diff.querySelector('.revision-diff-body');
-	        if (!body || diff.dataset.syncedPanes === 'true') {
+	        if (!body || diff.dataset.unifiedDiff === 'true') {
 	          return;
 	        }
 
@@ -1283,40 +1253,33 @@
 	          return;
 	        }
 
-	        var panes = document.createElement('div');
-	        var beforePane = document.createElement('div');
-	        var afterPane = document.createElement('div');
-	        var scrollState = {syncing: false};
+	        var unifiedPane = document.createElement('div');
+	        var head = diff.querySelector('.revision-diff-head');
 
-	        panes.className = 'revision-diff-panes';
-	        beforePane.className = 'revision-side revision-side-before';
-	        afterPane.className = 'revision-side revision-side-after';
-	        beforePane.setAttribute('tabindex', '0');
-	        afterPane.setAttribute('tabindex', '0');
+	        unifiedPane.className = 'revision-diff-unified';
+	        unifiedPane.setAttribute('tabindex', '0');
 
 	        rows.forEach(function (row) {
 	          var beforeCell = row.children[0];
 	          var afterCell = row.children[1];
-	          if (beforeCell) {
-	            beforePane.appendChild(beforeCell);
+	          if (beforeCell && beforeCell.classList.contains('is-chunk-title')) {
+	            appendUnifiedDiffCell(unifiedPane, beforeCell);
+	            return;
 	          }
-	          if (afterCell) {
-	            afterPane.appendChild(afterCell);
+	          if (beforeCell && afterCell && beforeCell.classList.contains('is-context') && afterCell.classList.contains('is-context')) {
+	            appendUnifiedDiffCell(unifiedPane, beforeCell);
+	            return;
 	          }
+	          appendUnifiedDiffCell(unifiedPane, beforeCell);
+	          appendUnifiedDiffCell(unifiedPane, afterCell);
 	        });
 
-	        beforePane.addEventListener('scroll', function () {
-	          syncDiffScroll(beforePane, afterPane, scrollState);
-	        }, {passive: true});
-	        afterPane.addEventListener('scroll', function () {
-	          syncDiffScroll(afterPane, beforePane, scrollState);
-	        }, {passive: true});
-
-	        panes.appendChild(beforePane);
-	        panes.appendChild(afterPane);
-	        body.replaceWith(panes);
-	        diff.dataset.syncedPanes = 'true';
-	        equalizeDiffLineWidths(diff);
+	        if (head) {
+	          head.remove();
+	        }
+	        diff.classList.add('is-unified');
+	        body.replaceWith(unifiedPane);
+	        diff.dataset.unifiedDiff = 'true';
 	      });
 	    }
 
@@ -1450,10 +1413,7 @@
     }
 
 	    highlightStaticPythonBlocks(document);
-	    buildSyncedDiffPanes(document);
-	    window.addEventListener('resize', function () {
-	      Array.prototype.slice.call(document.querySelectorAll('.revision-diff[data-synced-panes="true"]')).forEach(equalizeDiffLineWidths);
-	    });
+	    buildUnifiedDiffPanes(document);
 
     function attemptVideoPlay(video) {
       video.muted = true;
@@ -1492,7 +1452,7 @@
     }
 
 	    function initScrollAutoplayVideos(root) {
-      var videos = Array.prototype.slice.call((root || document).querySelectorAll('video'));
+      var videos = Array.prototype.slice.call((root || document).querySelectorAll('video:not(.revision-log-video)'));
       videos.forEach(function (video) {
         video.muted = true;
         video.defaultMuted = true;
@@ -1515,6 +1475,47 @@
 
       videos.forEach(function (video) {
         videoObserver.observe(video);
+      });
+    }
+
+    function initRevisionLogPreviews(root) {
+      Array.prototype.slice.call((root || document).querySelectorAll('[data-log-preview]')).forEach(function (preview) {
+        if (preview.dataset.previewReady === 'true') {
+          return;
+        }
+
+        var video = preview.querySelector('.revision-log-video');
+        if (!video) {
+          return;
+        }
+
+        preview.dataset.previewReady = 'true';
+        video.muted = true;
+        video.defaultMuted = true;
+
+        function playPreview() {
+          preview.classList.add('is-preview-open');
+          try {
+            video.currentTime = 0;
+          } catch (error) {}
+          var playPromise = video.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function () {});
+          }
+        }
+
+        function stopPreview() {
+          preview.classList.remove('is-preview-open');
+          video.pause();
+          try {
+            video.currentTime = 0;
+          } catch (error) {}
+        }
+
+        preview.addEventListener('mouseenter', playPreview);
+        preview.addEventListener('mouseleave', stopPreview);
+        preview.addEventListener('focusin', playPreview);
+        preview.addEventListener('focusout', stopPreview);
       });
     }
 
@@ -1656,9 +1657,6 @@
             behavior: behavior || 'smooth'
           });
           updateActive(targetIndex);
-          window.setTimeout(function () {
-            Array.prototype.slice.call(slider.querySelectorAll('.revision-diff[data-synced-panes="true"]')).forEach(equalizeDiffLineWidths);
-          }, behavior === 'smooth' ? 180 : 0);
         }
 
         tabs.forEach(function (tab) {
@@ -1732,6 +1730,7 @@
     }
 
 			    initScrollAutoplayVideos(document);
+		    initRevisionLogPreviews(document);
 		    initDataComparisonSliders(document);
 		    initRevisionSliders(document);
 		    initFloatingTaskSwitchers(document);
