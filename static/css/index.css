@@ -655,7 +655,6 @@ body {
   max-height: 30rem;
   min-width: 0;
   overflow: auto;
-  overscroll-behavior: contain;
   scrollbar-gutter: stable;
 }
 
@@ -666,7 +665,6 @@ body {
   max-height: 30rem;
   min-width: 0;
   overflow: auto;
-  overscroll-behavior: contain;
   scrollbar-gutter: stable;
 }
 
