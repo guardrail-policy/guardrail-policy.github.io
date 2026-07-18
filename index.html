@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/icon.png">
+  <script src="./static/js/results-charts.js" defer></script>
 </head>
 <body>
 
@@ -1111,20 +1112,22 @@
         <h2 class="title is-3">Results</h2>
 
         <h3 class="title is-4">Expert Demonstration Collection</h3>
-        <figure class="image result-plot">
-          <img class="result-plot-image"
-               src="./static/images/results_data_collection.png"
-               alt="Grouped bar chart comparing OpenTV, Manual, GLIDE, GLIDE iteration 1, and GLIDE iteration 2 success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
+        <figure class="result-plot result-chart"
+                data-result-chart="data-collection"
+                role="group"
+                aria-label="Grouped animated bar chart comparing OpenTV, Manual, GLIDE, GLIDE iteration 1, and GLIDE iteration 2 success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
+          <div class="result-chart-canvas"></div>
         </figure>
         <p class="has-text-justified is-size-6 mt-4">
           GLIDE raises best demonstration success to 70%, 90%, and 90% on Tomato plate transfer, Marker handover &amp; stand, and Wine serving, compared with 0%, 10%, and 0% for unguarded OpenTV teleoperation.
         </p>
 
         <h3 class="title is-4 mt-6">Guarded Policy Execution</h3>
-        <figure class="image result-plot">
-          <img class="result-plot-image"
-               src="./static/images/results_policy_deployment.png"
-               alt="Grouped bar chart comparing raw success-only policy deployment, guarded success-only policy deployment, and guarded mixed-data policy deployment success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
+        <figure class="result-plot result-chart"
+                data-result-chart="policy-deployment"
+                role="group"
+                aria-label="Grouped animated bar chart comparing raw success-only policy deployment, guarded success-only policy deployment, and guarded mixed-data policy deployment success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
+          <div class="result-chart-canvas"></div>
         </figure>
         <p class="has-text-justified is-size-6 mt-4">
           Guarded deployment improves autonomous execution where raw policy outputs are brittle. The best deployment results use mixed-quality data with guardrail filtering, reaching 70% success on Tomato plate transfer, 60% on Marker handover &amp; stand, and 60% on Wine serving.

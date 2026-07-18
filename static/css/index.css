@@ -1457,11 +1457,57 @@ body {
   margin: 1rem auto 1.25rem;
 }
 
-.image .result-plot-image {
+.result-chart {
+  position: relative;
+  width: 100%;
+  padding: 0.4rem 0;
+  overflow: hidden;
+  border: 1px solid #e3ddd1;
+  border-radius: 14px;
+  background: #f7f4ed;
+  box-shadow: 0 12px 30px rgba(47, 42, 36, 0.08);
+}
+
+.result-chart-canvas {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #c9c0b2 transparent;
+}
+
+.result-chart-svg {
   display: block;
-  width: 80%;
+  width: 100%;
+  min-width: 700px;
   height: auto;
-  margin: 0 auto;
+  font-family: "Noto Sans", sans-serif;
+}
+
+.result-chart-bar,
+.result-chart-label,
+.result-chart-legend-item {
+  transition: opacity 220ms ease;
+}
+
+.result-chart-legend-item {
+  cursor: pointer;
+  outline: none;
+}
+
+.result-chart-legend-item:hover .result-chart-legend-swatch,
+.result-chart-legend-item:focus-visible .result-chart-legend-swatch {
+  stroke-width: 2.5px;
+}
+
+@media screen and (max-width: 768px) {
+  .result-chart {
+    border-radius: 10px;
+  }
+
+  .result-chart-svg {
+    min-width: 680px;
+  }
 }
 
 pre {
