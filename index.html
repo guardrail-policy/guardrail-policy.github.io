@@ -17,7 +17,16 @@
 </head>
 <body>
 
-<section class="hero">
+<nav class="page-toc" aria-label="Table of contents">
+  <div class="page-toc-title">Contents</div>
+  <a class="page-toc-link" href="#overview">Overview</a>
+  <a class="page-toc-link" href="#method">Method</a>
+  <a class="page-toc-link" href="#tasks">Tasks</a>
+  <a class="page-toc-link" href="#results">Results</a>
+  <a class="page-toc-link" href="#abstract">Abstract</a>
+</nav>
+
+<section class="hero page-anchor" id="overview">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
@@ -54,7 +63,7 @@
 </section>
 
 
-<section class="section">
+<section class="section page-anchor" id="method">
   <div class="container is-max-desktop">
 
     <div class="columns is-centered">
@@ -84,7 +93,7 @@
     </div>
 
     <!-- Task Switcher. -->
-    <div class="task-switcher" data-task-switcher>
+    <div class="task-switcher page-anchor" id="tasks" data-task-switcher>
       <nav class="task-switcher-nav" aria-label="Task selection">
         <div class="task-switcher-title">Task Selection</div>
         <div class="task-switcher-button-row">
@@ -1095,7 +1104,7 @@
 </section>
 
 
-<section class="section" id="Results">
+<section class="section page-anchor" id="results">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
@@ -1126,7 +1135,7 @@
 </section>
 
 
-<section class="section">
+<section class="section page-anchor" id="abstract">
   <div class="container is-max-desktop">
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
@@ -1792,11 +1801,69 @@
       window.addEventListener('resize', requestUpdateFloatingTaskSwitchers);
     }
 
+    function initPageToc() {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.page-toc-link'));
+      var sections = links.map(function (link) {
+        return document.querySelector(link.getAttribute('href'));
+      }).filter(Boolean);
+
+      if (!links.length || !sections.length) {
+        return;
+      }
+
+      function setActiveLink(sectionId) {
+        links.forEach(function (link) {
+          var isActive = link.getAttribute('href') === '#' + sectionId;
+          link.classList.toggle('is-active', isActive);
+          if (isActive) {
+            link.setAttribute('aria-current', 'location');
+          } else {
+            link.removeAttribute('aria-current');
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener('click', function () {
+          setActiveLink(link.getAttribute('href').slice(1));
+        });
+      });
+
+      var ticking = false;
+
+      function updateActiveSection() {
+        var activationLine = (window.innerHeight || document.documentElement.clientHeight) * 0.3;
+        var activeSection = sections[0];
+
+        sections.forEach(function (section) {
+          if (section.getBoundingClientRect().top <= activationLine) {
+            activeSection = section;
+          }
+        });
+
+        setActiveLink(activeSection.id);
+        ticking = false;
+      }
+
+      function requestActiveSectionUpdate() {
+        if (ticking) {
+          return;
+        }
+        ticking = true;
+        window.requestAnimationFrame(updateActiveSection);
+      }
+
+      updateActiveSection();
+      window.addEventListener('scroll', requestActiveSectionUpdate, { passive: true });
+      window.addEventListener('resize', requestActiveSectionUpdate);
+    }
+
 			    initScrollAutoplayVideos(document);
 		    initRevisionLogPreviews(document);
 		    initDataComparisonSliders(document);
 		    initRevisionSliders(document);
 		    initFloatingTaskSwitchers(document);
+		    initPageToc();
 
 		    switchers.forEach(function (switcher) {
       var buttons = Array.prototype.slice.call(switcher.querySelectorAll('[data-task-button]'));
