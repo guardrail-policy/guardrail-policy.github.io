@@ -142,6 +142,7 @@ body {
 }
 
 .publication-header .hero-body {
+  padding-bottom: 1rem;
 }
 
 .publication-title {
@@ -156,6 +157,22 @@ body {
     color: #555;
     width: fit-content;
     font-weight: bold;
+}
+
+/* Venue badge, matching the "Welcome to CoRL 2026!" heading on 2026.corl.org
+   (Playfair Display 500), set larger here, in the site's burnt orange accent. */
+.venue-badge-row {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.venue-badge {
+  display: inline-block;
+  color: #bf5700 !important;
+  font-family: 'Playfair Display', Arial, serif;
+  font-weight: 500;
+  font-size: 22pt;
+  line-height: 1.5;
 }
 
 .publication-awards {
@@ -177,6 +194,14 @@ body {
 
 .author-block {
   display: inline-block;
+}
+
+/* Author names separated by a LaTeX \qquad-style gap (2em) instead of commas. */
+.author-names {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 2em;
 }
 
 .affiliation-row {

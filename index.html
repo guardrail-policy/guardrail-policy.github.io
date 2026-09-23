@@ -8,12 +8,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GLIDE</title>
 
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro|Playfair+Display:500"
         rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/icon.png">
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/results-charts.js" defer></script>
 </head>
 <body>
@@ -25,19 +29,67 @@
   <a class="page-toc-link" href="#tasks">Tasks</a>
   <a class="page-toc-link" href="#results">Results</a>
   <a class="page-toc-link" href="#abstract">Abstract</a>
+  <a class="page-toc-link" href="#BibTeX">BibTeX</a>
 </nav>
 
-<section class="hero page-anchor" id="overview">
+<section class="hero publication-header page-anchor" id="overview">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-1 publication-title"><img src="./static/images/icon_page.png"
                class="publication-icon"
-               alt="GLIDE icon">GLIDE: Guardrails for Learning from Infeasible Demonstrations Efficiently</h1>
-          <div class="is-size-5 publication-authors">
+               alt="GLIDE icon">GLIDE: Learning Beyond<br>What Humans Can Demonstrate</h1>
+          <div class="is-size-4 publication-authors author-names">
             <span class="author-block">
-              Anonymous Authors</span>
+              <a href="https://yuchen-song.github.io/">Yuchen Song</a><sup></sup></span>
+            <span class="author-block">
+              <a href="https://adityamittal03.github.io/">Aditya Mittal</a><sup></sup></span>
+            <span class="author-block">
+              <a href="https://unnat.github.io/">Unnat Jain</a><sup></sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors affiliation-row">
+            <span class="author-block"><sup></sup><img src="./static/images/ucirvine-blue.png" alt="UC Irvine" class="affiliation-logo"></span>
+          </div>
+
+          <div class="venue-badge-row">
+            <span class="venue-badge">CoRL 2026</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- arXiv Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2609.24996"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/Yuchen-Song/glide_code"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/yuchensong/glide_data"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-database"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span>
+            </div>
           </div>
 
           </div>
@@ -1159,12 +1211,17 @@
 </section>
 
 
-<!-- <section class="section" id="BibTeX">
+<section class="section page-anchor" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>tbd</code></pre>
+    <pre><code>@article{song2026glide,
+  title={Learning Beyond What Humans Can Demonstrate},
+  author={Song, Yuchen and Mittal, Aditya and Jain, Unnat},
+  journal={arXiv preprint arXiv:2609.24996},
+  year={2026}
+}</code></pre>
   </div>
-</section> -->
+</section>
 
 
 <footer class="footer">
@@ -1843,6 +1900,14 @@
             activeSection = section;
           }
         });
+
+        // The last section is too short to reach the activation line, so treat
+        // reaching the bottom of the page as being in it.
+        var doc = document.documentElement;
+        var scrolledToBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 2;
+        if (scrolledToBottom) {
+          activeSection = sections[sections.length - 1];
+        }
 
         setActiveLink(activeSection.id);
         ticking = false;
