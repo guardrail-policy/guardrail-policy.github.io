@@ -1511,6 +1511,7 @@ body {
 
 .result-chart-bar,
 .result-chart-label,
+.result-chart-arrow,
 .result-chart-legend-item {
   transition: opacity 220ms ease;
 }

@@ -1178,11 +1178,11 @@
         <figure class="result-plot result-chart"
                 data-result-chart="policy-deployment"
                 role="group"
-                aria-label="Grouped animated bar chart comparing raw success-only policy deployment, guarded success-only policy deployment, and guarded mixed-data policy deployment success rates for Tomato plate transfer, Marker handover and stand, and Wine serving.">
+                aria-label="Grouped animated bar chart of policy success rates for Tomato plate transfer, Marker handover and stand, and Wine serving. Policies trained on Vanilla OpenTV, success-only GLIDE, or mixed GLIDE data are each shown unguarded and guarded, with arrows marking the change when the guardrail is turned on. Vanilla: 0, 0, 0 percent unguarded to 20, 20, 0 percent guarded. Success-only: 0, 20, 50 percent to 60, 50, 40 percent. Mixed: 0, 40, 40 percent to 70, 60, 60 percent.">
           <div class="result-chart-canvas"></div>
         </figure>
         <p class="has-text-justified is-size-6 mt-4">
-          Guarded deployment improves autonomous execution where raw policy outputs are brittle. The best deployment results use mixed-quality data with guardrail filtering, reaching 70% success on Tomato plate transfer, 60% on Marker handover &amp; stand, and 60% on Wine serving.
+          Each pair is the same &pi;<sub>0.5</sub> policy run without (light) and with (solid) the GLIDE guardrail; arrows show the change when the guardrail is switched on. Mixed-quality GLIDE data with guarded deployment performs best, reaching 70% on Tomato plate transfer, 60% on Marker handover &amp; stand, and 60% on Wine serving, up from 0%, 40%, and 40% for the same policy unguarded. Policies trained on Vanilla OpenTV data reach at most 20% even with the guardrail, so runtime guardrails alone are not enough.
         </p>
       </div>
     </div>
