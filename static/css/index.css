@@ -159,8 +159,12 @@ body {
     font-weight: bold;
 }
 
-/* Venue badge, matching the "Welcome to CoRL 2026!" heading on 2026.corl.org
-   (Playfair Display 500), set larger here, in the site's burnt orange accent. */
+/* Venue badge: official CoRL 2026 logo followed by the year, in the logo's burnt
+   orange (#BF5700). The logo is sized so its C/R/L (97.9% of the image height)
+   match the cap height of the UC Irvine wordmark above (95.3% of its 2rem
+   height). The year uses the same Playfair Display 500 as "CoRL 2026" in the
+   meet-us title (.meet-us-venue), with lining figures (0.738em tall) sized so
+   the digits stand as tall as those letters. */
 .venue-badge-row {
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
@@ -169,10 +173,106 @@ body {
 .venue-badge {
   display: inline-block;
   color: #bf5700 !important;
-  font-family: 'Playfair Display', Arial, serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-weight: 500;
-  font-size: 22pt;
-  line-height: 1.5;
+  font-variant-numeric: lining-nums;
+  font-size: 41px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.venue-logo {
+  height: 1.95rem;
+  width: auto;
+  margin-right: 0.25em;
+  vertical-align: -0.02em;
+}
+
+/* "Come and meet us" callout under the venue badge. */
+.meet-us {
+  display: inline-block;
+  max-width: 560px;
+  margin: 0 auto 0.75rem;
+  padding: 0.8rem 1.4rem 0.9rem;
+  border: 1px solid #e3ddd1;
+  border-radius: 12px;
+  background: #f7f4ed;
+  color: #2f2a24;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.meet-us-title {
+  margin-bottom: 0.35rem;
+  color: #bf5700;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* "CoRL 2026" in the title keeps the original venue-badge type: Playfair Display
+   500, matching the "Welcome to CoRL 2026!" heading on 2026.corl.org. */
+.meet-us-venue {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.meet-us-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 1.2rem;
+  row-gap: 0.15rem;
+}
+
+.meet-us-item {
+  display: inline-block;
+}
+
+/* Font Awesome's inline SVG (1em tall, -0.125em baseline offset) centres on the text. */
+.meet-us-icon {
+  margin-right: 0.4rem;
+  color: #bf5700;
+}
+
+.meet-us-nowrap {
+  white-space: nowrap;
+}
+
+.meet-us-workshops {
+  margin-top: 0.4rem;
+  color: #655d52;
+  font-size: 0.95rem;
+}
+
+.meet-us-workshops a {
+  color: #2f2a24;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(191, 87, 0, 0.45);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+.meet-us-workshops a:hover,
+.meet-us-workshops a:focus-visible {
+  color: #bf5700;
+  text-decoration-color: #bf5700;
+}
+
+@media screen and (max-width: 768px) {
+  .meet-us {
+    display: block;
+    max-width: none;
+    padding: 0.7rem 0.9rem 0.8rem;
+    font-size: 0.92rem;
+  }
+
+  .meet-us-title {
+    font-size: 1rem;
+  }
 }
 
 .publication-awards {
